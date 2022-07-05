@@ -1,0 +1,54 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/id_drawer_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_login" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chat"
+            android:textSize="20sp"
+            android:textColor="@color/md_black_1000"
+            android:layout_gravity="center"
+            android:id="@+id/toolbar_title" />
+
+    </android.support.v7.widget.Toolbar>
+
+    <com.stfalcon.chatkit.messages.MessagesList
+        android:id="@+id/id_messages_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/id_drawer_toolbar"
+        android:layout_above="@+id/id_send_message_input"
+        app:dateHeaderFormat="dd MMMM yyyy"
+        app:incomingDefaultBubbleSelectedColor="@color/gray"
+        app:incomingTextColor="@color/black"
+        app:incomingTextSize="18sp"
+        app:outcomingTextColor="@color/white"
+        app:outcomingTextSize="18sp"
+        app:textAutoLink="all"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@+id/id_send_message_input"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@android:color/darker_gray" />
+
+    <com.stfalcon.chatkit.messages.MessageInput
+        android:id="@+id/id_send_message_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:inputHint="Enter message"/>
+
+</RelativeLayout>

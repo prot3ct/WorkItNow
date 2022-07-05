@@ -1,0 +1,51 @@
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".views.edit_profile.EditProfileFragment">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="218dp">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/id_drawer_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bg_login">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit Profile"
+                android:textSize="20sp"
+                android:textColor="@color/md_black_1000"
+                android:layout_gravity="center"/>
+
+            <Button
+                android:id="@+id/id_update_profile_button"
+                android:layout_width="30sp"
+                android:layout_height="40sp"
+                android:layout_gravity="right"
+                android:layout_marginRight="15sp"
+                android:background="@drawable/ic_checkmark" />
+
+        </android.support.v7.widget.Toolbar>
+
+        <ImageView
+            android:id="@+id/id_edit_profile_picture"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:src="@drawable/blank_profile_picture" />
+
+
+    </android.support.design.widget.AppBarLayout>
+
+    <include layout="@layout/content_edit_profile" />
+
+</android.support.design.widget.CoordinatorLayout>

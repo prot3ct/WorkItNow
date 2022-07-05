@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1028198610651",
+    "firebase_url": "https://workit-1526221463140.firebaseio.com",
+    "project_id": "workit-1526221463140",
+    "storage_bucket": "workit-1526221463140.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1028198610651:android:d6c83b9daf0be15d",
+        "android_client_info": {
+          "package_name": "prot3ct.workit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1028198610651-k4lhrh1cdn4ra7m59rkdqo587ctu13dd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAr9Vnbe4DUqooAAUzCWR5bIA-qw7o7E04"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
