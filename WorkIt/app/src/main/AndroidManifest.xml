@@ -24,7 +24,7 @@
         android:roundIcon="@drawable/navigation_background"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
-        <activity android:name=".views.login.LoginActivity" >
+        <activity android:exported="true" android:name=".views.login.LoginActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -33,7 +33,7 @@
         </activity>
         <activity android:name=".views.register.RegisterActivity" />
 
-        <activity android:name=".views.list_tasks.ListTasksActivity" >
+        <activity android:exported="true" android:name=".views.list_tasks.ListTasksActivity" >
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
             <intent-filter>
