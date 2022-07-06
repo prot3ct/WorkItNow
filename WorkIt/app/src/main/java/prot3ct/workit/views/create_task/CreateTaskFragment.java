@@ -5,9 +5,6 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +14,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -32,7 +34,7 @@ public class CreateTaskFragment extends Fragment implements CreateTaskContract.V
     private CreateTaskContract.Presenter presenter;
     private Context context;
 
-    private TextInputLayout  titleLayout;
+    private TextInputLayout titleLayout;
     private TextInputLayout  lengthLayout;
     private TextInputLayout  descriptionLayout;
     private TextInputLayout  cityLayout;

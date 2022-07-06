@@ -3,19 +3,18 @@ package prot3ct.workit.views.list_tasks;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -46,7 +45,7 @@ public class ListTasksAdapter extends RecyclerView.Adapter<ListTasksAdapter.Task
     }
 
     @Override
-    public void onBindViewHolder(TaskViewHolder holder, final int position) {
+    public void onBindViewHolder(TaskViewHolder holder, int position) {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.ENGLISH);
         Date date = null;
         try {
@@ -84,7 +83,7 @@ public class ListTasksAdapter extends RecyclerView.Adapter<ListTasksAdapter.Task
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, TaskDetailsActivity.class);
-                intent.putExtra("taskId", tasks.get(position).getTaskId());
+                intent.putExtra("taskId", tasks.get(holder.getAbsoluteAdapterPosition()).getTaskId());
                 context.startActivity(intent);
             }
         });

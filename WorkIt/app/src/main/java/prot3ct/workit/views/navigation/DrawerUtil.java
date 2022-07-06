@@ -10,7 +10,8 @@ import android.net.Uri;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
-import android.support.v7.widget.Toolbar;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.mikepenz.iconics.typeface.IIcon;
 import com.mikepenz.materialdrawer.AccountHeader;

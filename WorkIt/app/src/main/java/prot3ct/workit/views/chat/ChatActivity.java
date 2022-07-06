@@ -1,7 +1,8 @@
 package prot3ct.workit.views.chat;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import prot3ct.workit.R;
 import prot3ct.workit.views.chat.base.ChatContract;

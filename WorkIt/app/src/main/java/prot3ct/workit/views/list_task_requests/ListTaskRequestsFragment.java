@@ -3,19 +3,19 @@ package prot3ct.workit.views.list_task_requests;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
 import prot3ct.workit.R;
-import prot3ct.workit.view_models.ProfileDetailsViewModel;
 import prot3ct.workit.view_models.TaskRequestListViewModel;
 import prot3ct.workit.views.my_tasks.MyTasksActivity;
 import prot3ct.workit.views.navigation.DrawerUtil;

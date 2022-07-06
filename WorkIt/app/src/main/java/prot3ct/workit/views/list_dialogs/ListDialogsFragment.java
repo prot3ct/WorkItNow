@@ -7,8 +7,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +20,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
 import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.dialogs.DialogsList;
@@ -163,7 +164,7 @@ public class ListDialogsFragment extends Fragment implements ListDialogsContract
 
         DialogsListAdapter dialogsListAdapter = new DialogsListAdapter<>(new ImageLoader() {
             @Override
-            public void loadImage(ImageView imageView, String url) {
+            public void loadImage(ImageView imageView, String url, Object payload) {
                 if(url == null) {
                     imageView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.blank_profile_picture));
                 }

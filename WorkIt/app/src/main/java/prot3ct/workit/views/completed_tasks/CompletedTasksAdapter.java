@@ -3,8 +3,6 @@ package prot3ct.workit.views.completed_tasks;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +11,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.stepstone.apprating.AppRatingDialog;
+import androidx.recyclerview.widget.RecyclerView;
+
 
 import org.w3c.dom.Text;
 
@@ -58,7 +57,7 @@ public class CompletedTasksAdapter extends RecyclerView.Adapter<CompletedTasksAd
     }
 
     @Override
-    public void onBindViewHolder(final CompletedTasksAdapter.TaskViewHolder holder, final int position) {
+    public void onBindViewHolder(final CompletedTasksAdapter.TaskViewHolder holder, int position) {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.ENGLISH);
         Date date = null;
         try {
@@ -96,14 +95,14 @@ public class CompletedTasksAdapter extends RecyclerView.Adapter<CompletedTasksAd
             holder.rateButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    view.updateSelectedInfo(tasks.get(position).getTaskId(), tasks.get(position).getSupervisorId(), tasks.get(position).getTaskerId());
+                    view.updateSelectedInfo(tasks.get(holder.getAbsoluteAdapterPosition()).getTaskId(), tasks.get(holder.getLayoutPosition()).getSupervisorId(), tasks.get(position).getTaskerId());
                     view.showDialog();
                     holder.rateButton.setVisibility(View.GONE);
-                    if(tasks.get(position).getTaskerId() == loggedInUserId) {
-                        holder.ratingResult.setText("You have already rated " + tasks.get(position).getSupervisorFullName());
+                    if(tasks.get(holder.getAbsoluteAdapterPosition()).getTaskerId() == loggedInUserId) {
+                        holder.ratingResult.setText("You have already rated " + tasks.get(holder.getAbsoluteAdapterPosition()).getSupervisorFullName());
                     }
                     else {
-                        holder.ratingResult.setText("You have already rated " + tasks.get(position).getTaskerFullName());
+                        holder.ratingResult.setText("You have already rated " + tasks.get(holder.getAbsoluteAdapterPosition()).getTaskerFullName());
                     }
                 }
             });

@@ -1,18 +1,18 @@
 package prot3ct.workit.views.my_tasks;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
@@ -95,7 +95,7 @@ public class MyTasksAdapter extends RecyclerView.Adapter<MyTasksAdapter.TaskView
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, EditTaskActivity.class);
-                intent.putExtra("taskId", tasks.get(position).getTaskId());
+                intent.putExtra("taskId", tasks.get(holder.getAbsoluteAdapterPosition()).getTaskId());
                 context.startActivity(intent);
             }
         });
@@ -104,7 +104,7 @@ public class MyTasksAdapter extends RecyclerView.Adapter<MyTasksAdapter.TaskView
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, ListTaskRequestsActivity.class);
-                intent.putExtra("taskId", tasks.get(position).getTaskId());
+                intent.putExtra("taskId", tasks.get(holder.getAbsoluteAdapterPosition()).getTaskId());
                 context.startActivity(intent);
             }
         });
@@ -117,8 +117,8 @@ public class MyTasksAdapter extends RecyclerView.Adapter<MyTasksAdapter.TaskView
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which){
                             case DialogInterface.BUTTON_POSITIVE:
-                                presenter.deleteTask(tasks.get(position).getTaskId());
-                                tasks.remove(position);
+                                presenter.deleteTask(tasks.get(holder.getAbsoluteAdapterPosition()).getTaskId());
+                                tasks.remove(holder.getAbsoluteAdapterPosition());
                                 notifyDataSetChanged();
                                 break;
                         }
