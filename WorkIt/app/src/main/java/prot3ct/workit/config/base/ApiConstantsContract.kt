@@ -1,59 +1,59 @@
-package prot3ct.workit.config.base;
+package prot3ct.workit.config.base
 
-public interface ApiConstantsContract {
-    String loginUrl();
+interface ApiConstantsContract {
+    fun loginUrl(): String
 
-    String registerUrl();
+    fun registerUrl(): String
 
-    String autoLoginUserUrl();
+    fun autoLoginUserUrl(): String
 
-    String createTaskUrl();
+    fun createTaskUrl(): String
 
-    String updateTaskUrl(int taskId);
+    fun updateTaskUrl(taskId: Int): String
 
-    String getTaskDetailsUrl(int taskId);
+    fun getTaskDetailsUrl(taskId: Int): String
 
-    String deleteTaskUrl(int taskId);
+    fun deleteTaskUrl(taskId: Int): String
 
-    String getAvailableTasks(int userId, int page);
+    fun getAvailableTasks(userId: Int, page: Int): String
 
-    String getAssignedTasksUrl(int userId);
+    fun getAssignedTasksUrl(userId: Int): String
 
-    String getCompletedTasksUrl(int userId);
+    fun getCompletedTasksUrl(userId: Int): String
 
-    String getMyTasks(int userId);
+    fun getMyTasks(userId: Int): String
 
-    String createTaskRequestUrl();
+    fun createTaskRequestUrl(): String
 
-    String updateTaskRequestUrl(int requestId);
+    fun updateTaskRequestUrl(requestId: Int): String
 
-    String getRequestsForTaskUrl(int taskId);
+    fun getRequestsForTaskUrl(taskId: Int): String
 
-    String deleteTaskRequestUrl(int taskRequestId);
+    fun deleteTaskRequestUrl(taskRequestId: Int): String
 
-    String createRaitingUrl();
+    fun createRaitingUrl(): String
 
-    String updateProfile(int userId);
+    fun updateProfile(userId: Int): String
 
-    String getProfileDetailsUrl(int userId);
+    fun getProfileDetailsUrl(userId: Int): String
 
-    String getIsUserAssignableToTask();
+    fun isUserAssignableToTask(): String
 
-    String updateAssignedUser(int taskId);
+    fun updateAssignedUser(taskId: Int): String
 
-    String createDialog();
+    fun createDialog(): String
 
-    String createMessage(int dialogId);
+    fun createMessage(dialogId: Int): String
 
-    String getMessages(int dialogId);
+    fun getMessages(dialogId: Int): String
 
-    String getDialogs(int userId);
+    fun getDialogs(userId: Int): String
 
-    String getLocationLatLngUrl(String location);
+    fun getLocationLatLngUrl(location: String): String
 
-    int responseSuccessCode();
+    fun responseSuccessCode(): Int
 
-    int responseErrorCode();
+    fun responseErrorCode(): Int
 
-    int reponseServerErrorCode();
+    fun reponseServerErrorCode(): Int
 }

@@ -1,19 +1,19 @@
-package prot3ct.workit.data.remote.base;
+package prot3ct.workit.data.remote.base
 
-import io.reactivex.Observable;
+import io.reactivex.Observable
 
-public interface AuthDataContract {
-    Observable<Boolean> login(String username, String password);
+interface AuthDataContract {
+    fun login(username: String, password: String): Observable<Boolean>
 
-    Observable<Boolean> register(String email, String fullName, String password);
+    fun register(email: String, fullName: String, password: String): Observable<Boolean>
 
-    Observable<Boolean> autoLogin();
+    fun autoLogin(): Observable<Boolean>
 
-    int getLoggedInUserId();
+    val loggedInUserId: Int
 
-    String getLoggedInUserName();
+    val loggedInUserName: String
 
-    void logoutUser();
+    fun logoutUser()
 
-    boolean isLoggedIn();
+    val isLoggedIn: Boolean
 }

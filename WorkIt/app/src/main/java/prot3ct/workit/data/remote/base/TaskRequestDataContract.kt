@@ -1,14 +1,12 @@
-package prot3ct.workit.data.remote.base;
+package prot3ct.workit.data.remote.base
 
-import java.util.List;
+import io.reactivex.Observable
+import prot3ct.workit.view_models.TaskRequestListViewModel
 
-import io.reactivex.Observable;
-import prot3ct.workit.view_models.TaskRequestListViewModel;
+interface TaskRequestDataContract {
+    fun createTaskRequest(taskId: Int): Observable<Boolean>
 
-public interface TaskRequestDataContract {
-    Observable<Boolean> createTaskRequest(int taskId);
+    fun updateTaskRequest(taskRequestId: Int, status: Int): Observable<Boolean>
 
-    Observable<Boolean> updateTaskRequest(int taskRequestId, int status);
-
-    Observable<List<TaskRequestListViewModel>> getAllTaskRequestsForTask(int taskId);
+    fun getAllTaskRequestsForTask(taskId: Int): Observable<List<TaskRequestListViewModel>>
 }

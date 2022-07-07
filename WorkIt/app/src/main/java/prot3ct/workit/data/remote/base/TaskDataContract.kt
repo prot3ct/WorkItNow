@@ -1,35 +1,40 @@
-package prot3ct.workit.data.remote.base;
+package prot3ct.workit.data.remote.base
 
-import java.util.List;
+import io.reactivex.Observable
+import prot3ct.workit.view_models.TaskDetailViewModel
+import prot3ct.workit.view_models.IsUserAssignableToTaskViewModel
+import prot3ct.workit.view_models.AssignedTasksListViewModel
+import prot3ct.workit.view_models.AvailableTasksListViewModel
+import prot3ct.workit.view_models.MyTasksListViewModel
+import prot3ct.workit.view_models.CompletedTasksListViewModel
 
-import io.reactivex.Observable;
-import prot3ct.workit.view_models.AssignedTasksListViewModel;
-import prot3ct.workit.view_models.AvailableTasksListViewModel;
-import prot3ct.workit.view_models.CompletedTasksListViewModel;
-import prot3ct.workit.view_models.IsUserAssignableToTaskViewModel;
-import prot3ct.workit.view_models.MyTasksListViewModel;
-import prot3ct.workit.view_models.TaskDetailViewModel;
+interface TaskDataContract {
+    fun createTask(
+        title: String, startDate: String, length: String,
+        description: String, city: String, address: String, reward: String
+    ): Observable<Boolean>
 
-public interface TaskDataContract {
-    Observable<Boolean> createTask(String title, String startDate, String length,
-                                   String description, String city, String address, String reward);
+    fun updateTask(
+        taskId: Int, title: String, startDate: String, length: String,
+        description: String, city: String, address: String, reward: String
+    ): Observable<Boolean?>?
 
-    Observable<Boolean> updateTask(int taskId, String title, String startDate, String length,
-                                   String description, String city, String address, String reward);
+    fun getTaskDetails(taskId: Int): Observable<TaskDetailViewModel>
 
-    Observable<TaskDetailViewModel> getTaskDetails(int taskId);
+    fun deleteTask(taskId: Int): Observable<Boolean>
 
-    Observable<Boolean> deleteTask(int taskId);
+    fun canAssignToTask(taskId: Int): Observable<IsUserAssignableToTaskViewModel>
 
-    Observable<IsUserAssignableToTaskViewModel> canAssignToTask(int taskId);
+    val assignedTasks: Observable<List<AssignedTasksListViewModel>>
 
-    Observable<List<AssignedTasksListViewModel>> getAssignedTasks();
+    fun getAvailableTasks(
+        page: Int,
+        search: String
+    ): Observable<List<AvailableTasksListViewModel>>
 
-    Observable<List<AvailableTasksListViewModel>> getAvailableTasks(int page, String search);
+    val myTasks: Observable<List<MyTasksListViewModel>>
 
-    Observable<List<MyTasksListViewModel>> getMyTasks();
+    val completedTasks: Observable<List<CompletedTasksListViewModel>>
 
-    Observable<List<CompletedTasksListViewModel>> getCompletedTasks();
-
-    Observable<Boolean> removeAssignedUser(int taskId);
+    fun removeAssignedUser(taskId: Int): Observable<Boolean>
 }

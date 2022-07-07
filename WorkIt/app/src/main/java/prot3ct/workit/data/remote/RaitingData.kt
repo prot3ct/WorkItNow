@@ -1,59 +1,55 @@
-package prot3ct.workit.data.remote;
+package prot3ct.workit.data.remote
 
-import android.content.Context;
-import android.util.Log;
+import android.content.Context
+import io.reactivex.Observable
+import prot3ct.workit.data.remote.base.RaitingDataContract
+import prot3ct.workit.utils.OkHttpRequester
+import prot3ct.workit.utils.HashProvider
+import prot3ct.workit.config.ApiConstants
+import prot3ct.workit.utils.GsonParser
+import prot3ct.workit.data.local.UserSession
+import prot3ct.workit.models.base.HttpResponseContract
+import java.lang.Error
+import java.util.HashMap
+import kotlin.Throws
 
-import java.util.HashMap;
-import java.util.Map;
+class RaitingData(context: Context) : RaitingDataContract {
+    private val httpRequester: OkHttpRequester = OkHttpRequester()
 
-import io.reactivex.functions.Function;
-import io.reactivex.Observable;
-import prot3ct.workit.config.ApiConstants;
-import prot3ct.workit.data.local.UserSession;
-import prot3ct.workit.data.remote.base.RaitingDataContract;
-import prot3ct.workit.models.base.HttpResponseContract;
-import prot3ct.workit.utils.GsonParser;
-import prot3ct.workit.utils.HashProvider;
-import prot3ct.workit.utils.OkHttpRequester;
+    private val hashProvider: HashProvider = HashProvider()
 
-public class RaitingData implements RaitingDataContract {
-    private final OkHttpRequester httpRequester;
-    private final HashProvider hashProvider;
-    private final ApiConstants apiConstants;
-    private final GsonParser jsonParser;
-    private final UserSession userSession;
-    private Map<String, String> headers;
+    private val apiConstants: ApiConstants = ApiConstants()
 
-    public RaitingData(Context context) {
-        this.jsonParser = new GsonParser();
-        this.hashProvider = new HashProvider();
-        this.httpRequester = new OkHttpRequester();
-        this.apiConstants = new ApiConstants();
-        this.userSession = new UserSession(context);
-        headers = new HashMap<>();
-        headers.put("authToken", userSession.getId() + ":" + userSession.getAccessToken());
-    }
+    private val jsonParser: GsonParser = GsonParser()
 
-    @Override
-    public Observable<Boolean> createRaiting(int value, String description, int receiverUserId, int taskId, int receiverUserRoleId) {
-        Map<String, String> raiting = new HashMap<>();
-        raiting.put("receiverUserId", Integer.toString(receiverUserId));
-        raiting.put("taskId", Integer.toString(taskId));
-        raiting.put("receiverUserRoleId", Integer.toString(receiverUserRoleId));
-        raiting.put("description", description);
-        raiting.put("value", value+"");
+    private val userSession: UserSession = UserSession(context)
 
+    private val headers: MutableMap<String, String> = HashMap()
+
+    override fun createRaiting(
+        value: Int,
+        description: String,
+        receiverUserId: Int,
+        taskId: Int,
+        receiverUserRoleId: Int
+    ): Observable<Boolean> {
+        val raiting: MutableMap<String, String> = HashMap()
+        raiting["receiverUserId"] = receiverUserId.toString()
+        raiting["taskId"] = taskId.toString()
+        raiting["receiverUserRoleId"] = receiverUserRoleId.toString()
+        raiting["description"] = description
+        raiting["value"] = value.toString() + ""
         return httpRequester
             .post(apiConstants.createRaitingUrl(), raiting, headers)
-            .map(new Function<HttpResponseContract, Boolean>() {
-                @Override
-                public Boolean apply(HttpResponseContract iHttpResponse) throws Exception {
-                    if (iHttpResponse.getCode() == apiConstants.responseErrorCode()) {
-                        throw new Error(iHttpResponse.getMessage());
-                    }
-
-                    return true;
+            .map { iHttpResponse ->
+                if (iHttpResponse.code == apiConstants.responseErrorCode()) {
+                    throw Error(iHttpResponse.message)
                 }
-            });
+                true
+            }
+    }
+
+    init {
+        headers["authToken"] = userSession.id.toString() + ":" + userSession.accessToken
     }
 }

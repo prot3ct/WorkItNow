@@ -1,5 +1,5 @@
-package prot3ct.workit.base;
+package prot3ct.workit.base
 
-public interface BaseView<T> {
-    void setPresenter(T presenter);
+interface BaseView<T> {
+    fun setPresenter(presenter: T)
 }

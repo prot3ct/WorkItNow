@@ -1,69 +1,49 @@
-package prot3ct.workit.data.local;
+package prot3ct.workit.data.local
 
-import android.app.backup.FullBackupDataOutput;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import android.content.Context
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
 
-import prot3ct.workit.data.local.base.UserSessionContract;
+class UserSession(context: Context) {
+    private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-public class UserSession implements UserSessionContract{
-    private final SharedPreferences sharedPreferences;
+    var id: Int
+        get() = sharedPreferences.getInt("id", 0)
+        set(newId) {
+            sharedPreferences.edit().putInt("id", newId).apply()
+        }
 
-    public UserSession(Context context) {
-        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-    }
+    var accessToken: String?
+        get() = sharedPreferences.getString("accessToken", null)
+        set(accessToken) {
+            sharedPreferences.edit().putString("accessToken", accessToken).apply()
+        }
 
-    @Override
-    public String getAccessToken() {
-        return sharedPreferences.getString("accessToken", null);
-    }
+    var fullName: String?
+        get() = sharedPreferences.getString("fullName", null)
+        set(fullName) {
+            sharedPreferences.edit().putString("fullName", fullName).apply()
+        }
 
-    @Override
-    public String getFullName() {
-        return sharedPreferences.getString("fullName", null);
-    }
+    var email: String?
+        get() = sharedPreferences.getString("email", null)
+        set(email) {
+            sharedPreferences.edit().putString("email", email).apply()
+        }
 
-    @Override
-    public String getEmail() {
-        return sharedPreferences.getString("email", null);
-    }
+    var loggedInUserId: Int
+        get() = sharedPreferences.getInt("id", 0)
+        set(id) {
+            sharedPreferences.edit().putInt("id", id).apply()
+        }
 
-    @Override
-    public int getId() {
-        return sharedPreferences.getInt("id", 0);
-    }
+    val isLoggedIn: Boolean
+        get() = email != null
 
-    @Override
-    public void setEmail(String email) {
-        sharedPreferences.edit().putString("email", email).apply();
-    }
-
-    @Override
-    public void setFullName(String fullName) {
-        sharedPreferences.edit().putString("fullName", fullName).apply();
-    }
-
-    @Override
-    public void setAccessToken(String accessToken) {
-        sharedPreferences.edit().putString("accessToken", accessToken).apply();
-    }
-
-    @Override
-    public void setId(int id) {
-        sharedPreferences.edit().putInt("id", id).apply();
-    }
-
-    @Override
-    public boolean isUserLoggedIn() {
-        return getEmail() != null;
-    }
-
-    @Override
-    public void clearSession() {
-        setId(0);
-        setFullName(null);
-        setEmail(null);
-        setAccessToken(null);
+    fun clearSession() {
+        id = 0
+        fullName = null
+        email = null
+        accessToken = null
     }
 }

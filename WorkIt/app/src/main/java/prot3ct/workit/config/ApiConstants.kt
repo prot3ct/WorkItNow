@@ -1,151 +1,100 @@
-package prot3ct.workit.config;
+package prot3ct.workit.config
 
-import android.util.Log;
+import prot3ct.workit.config.base.ApiConstantsContract
 
-import com.google.android.gms.common.api.Api;
+class ApiConstants : ApiConstantsContract {
+    override fun loginUrl(): String = "$API_URL/auth/login"
 
-import prot3ct.workit.config.base.ApiConstantsContract;
+    override fun registerUrl() = "$API_URL/auth/register"
 
-public class ApiConstants implements ApiConstantsContract {
-    private static final String API_URL = "http://workit.azurewebsites.net/api";
+    override fun autoLoginUserUrl() = "$API_URL/auth/autologin"
 
-    private static final int RESPNCE_SUCCESS_CODE = 200;
-    private static final int RESPONSE_ERROR_CODE = 404;
-    private static final int RESPONSE_SERVER_ERROR_CODE = 500;
 
-    @Override
-    public String loginUrl() {
-        return API_URL + "/auth/login";
+    override fun createTaskUrl() = "$API_URL/tasks"
+
+
+    override fun updateTaskUrl(taskId: Int) =
+        "$API_URL/tasks/$taskId"
+
+
+    override fun getTaskDetailsUrl(taskId: Int) =
+        "$API_URL/tasks/$taskId"
+
+
+    override fun deleteTaskUrl(taskId: Int) =
+        "$API_URL/tasks/$taskId"
+
+
+    override fun getAvailableTasks(userId: Int, page: Int) =
+        "$API_URL/users/$userId/available-tasks/page/$page"
+
+
+    override fun getAssignedTasksUrl(userId: Int) = "$API_URL/users/$userId/assigned-tasks"
+
+
+    override fun getCompletedTasksUrl(userId: Int) =
+        "$API_URL/users/$userId/completed-tasks"
+
+
+    override fun getMyTasks(userId: Int) = "$API_URL/users/$userId/my-tasks"
+
+
+    override fun createTaskRequestUrl() = "$API_URL/requests"
+
+
+    override fun updateTaskRequestUrl(requestId: Int) = "$API_URL/requests/$requestId"
+
+
+    override fun getRequestsForTaskUrl(taskId: Int) = "$API_URL/tasks/$taskId/requests"
+
+
+    override fun deleteTaskRequestUrl(taskRequestId: Int) =
+        "$API_URL/requests/$taskRequestId/delete"
+
+
+    override fun createRaitingUrl() = "$API_URL/raitings"
+
+
+    override fun updateProfile(userId: Int) = "$API_URL/users/$userId"
+
+
+    override fun getProfileDetailsUrl(userId: Int) = "$API_URL/users/$userId"
+
+
+    override fun isUserAssignableToTask() = "$API_URL/tasks/can-assign"
+
+    override fun getLocationLatLngUrl(location: String) =
+        "https://maps.googleapis.com/maps/api/geocode/json?address=$location&key=AIzaSyA4t0Wp6n0os2wVPs3JRoSnDDJf49JVgFM"
+
+
+    override fun updateAssignedUser(taskId: Int) = "$API_URL/tasks/$taskId/assigned-user"
+
+
+    override fun createDialog() = "$API_URL/dialogs/"
+
+
+    override fun getDialogs(userId: Int) = API_URL + "/users/" + userId + "/dialogs"
+
+
+    override fun createMessage(dialogId: Int) = API_URL + "/dialogs/" + dialogId + "/messages"
+
+
+    override fun getMessages(dialogId: Int) = API_URL + "/dialogs/" + dialogId + "/messages"
+
+
+    override fun responseSuccessCode() = RESPONSE_SUCCESS_CODE
+
+
+    override fun responseErrorCode() = RESPONSE_ERROR_CODE
+
+
+    override fun reponseServerErrorCode() = RESPONSE_SERVER_ERROR_CODE
+
+
+    companion object {
+        private const val API_URL = "http://workit.azurewebsites.net/api"
+        private const val RESPONSE_SUCCESS_CODE = 200
+        private const val RESPONSE_ERROR_CODE = 404
+        private const val RESPONSE_SERVER_ERROR_CODE = 500
     }
-
-    @Override
-    public String registerUrl() {
-        return API_URL + "/auth/register";
-    }
-
-    @Override
-    public String autoLoginUserUrl() {
-        return API_URL + "/auth/autologin";
-    }
-
-    @Override
-    public String createTaskUrl() {
-        return API_URL + "/tasks";
-    }
-
-    @Override
-    public String updateTaskUrl(int taskId) {
-        return API_URL + "/tasks/" + taskId;
-    }
-
-    @Override
-    public String getTaskDetailsUrl(int taskId) {
-        return API_URL  + "/tasks/" + taskId;
-    }
-
-    @Override
-    public String deleteTaskUrl(int taskId) {
-        return API_URL + "/tasks/" + taskId;
-    }
-
-    @Override
-    public String getAvailableTasks(int userId, int page) {
-        return API_URL + "/users/" + userId + "/available-tasks/page/" + page;
-    }
-
-    @Override
-    public String getAssignedTasksUrl(int userId) {
-        return  API_URL + "/users/" + userId + "/assigned-tasks";
-    }
-
-    @Override
-    public String getCompletedTasksUrl(int userId) {
-        return API_URL + "/users/" + userId + "/completed-tasks";
-    }
-
-    @Override
-    public String getMyTasks(int userId) {
-        return API_URL + "/users/" + userId + "/my-tasks";
-    }
-
-    @Override
-    public String createTaskRequestUrl() { return API_URL + "/requests"; }
-
-    @Override
-    public String updateTaskRequestUrl(int requestId) {
-        return API_URL + "/requests/" + requestId;
-    }
-
-    @Override
-    public String getRequestsForTaskUrl(int taskId) {
-        return API_URL + "/tasks/" + taskId + "/requests";
-    }
-
-    @Override
-    public String deleteTaskRequestUrl(int taskRequestId) {
-        return API_URL + "/requests/" + taskRequestId + "/delete";
-    }
-
-    @Override
-    public String createRaitingUrl() {
-        return API_URL + "/raitings";
-    }
-
-    @Override
-    public String updateProfile(int userId) {
-        return API_URL + "/users/" + userId;
-    }
-
-    @Override
-    public String getProfileDetailsUrl(int userId) {
-        return API_URL + "/users/" + userId;
-    }
-
-    @Override
-    public String getIsUserAssignableToTask() {
-        return API_URL + "/tasks/can-assign";
-    }
-
-    @Override
-    public String getLocationLatLngUrl(String location) {
-        return "https://maps.googleapis.com/maps/api/geocode/json?address=" + location + "&key=AIzaSyA4t0Wp6n0os2wVPs3JRoSnDDJf49JVgFM";
-    }
-
-    @Override
-    public String updateAssignedUser(int taskId) {
-        return API_URL + "/tasks/" + taskId + "/assigned-user";
-    }
-
-    @Override
-    public String createDialog() {
-        return API_URL + "/dialogs/";
-    }
-
-    @Override
-    public String getDialogs(int userId) {
-        return API_URL + "/users/" + userId + "/dialogs";
-    }
-
-    @Override
-    public String createMessage(int dialogId) {
-        return API_URL + "/dialogs/" + dialogId + "/messages";
-    }
-
-    @Override
-    public String getMessages(int dialogId) {
-        return API_URL + "/dialogs/" + dialogId + "/messages";
-    }
-
-    @Override
-    public int responseSuccessCode() {
-        return RESPNCE_SUCCESS_CODE;
-    }
-
-    @Override
-    public int responseErrorCode() {
-        return RESPONSE_ERROR_CODE;
-    }
-
-    @Override
-    public int reponseServerErrorCode() { return RESPONSE_SERVER_ERROR_CODE; }
 }

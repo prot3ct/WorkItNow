@@ -1,10 +1,15 @@
-package prot3ct.workit.data.remote.base;
+package prot3ct.workit.data.remote.base
 
-import io.reactivex.Observable;
-import prot3ct.workit.view_models.ProfileDetailsViewModel;
+import io.reactivex.Observable
+import prot3ct.workit.view_models.ProfileDetailsViewModel
 
-public interface UserDataContract {
-    Observable<ProfileDetailsViewModel> getProfileDetails(int userId);
+interface UserDataContract {
 
-    Observable<Boolean> updateProfile(String fullName, String phone, String profilePictureAsString);
+    fun getProfileDetails(userId: Int): Observable<ProfileDetailsViewModel>
+
+    fun updateProfile(
+        fullName: String,
+        phone: String,
+        profilePictureAsString: String
+    ): Observable<Boolean>
 }

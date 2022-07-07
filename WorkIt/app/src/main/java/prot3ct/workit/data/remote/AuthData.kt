@@ -1,121 +1,90 @@
-package prot3ct.workit.data.remote;
+package prot3ct.workit.data.remote
 
-import android.content.Context;
+import android.content.Context
+import io.reactivex.Observable
+import prot3ct.workit.data.remote.base.AuthDataContract
+import prot3ct.workit.utils.OkHttpRequester
+import prot3ct.workit.utils.HashProvider
+import prot3ct.workit.config.ApiConstants
+import prot3ct.workit.utils.GsonParser
+import prot3ct.workit.data.local.UserSession
+import prot3ct.workit.view_models.LoginViewModel
+import java.lang.Error
+import java.util.HashMap
 
-import java.util.HashMap;
-import java.util.Map;
+class AuthData(private val context: Context) : AuthDataContract {
+    private val httpRequester: OkHttpRequester = OkHttpRequester()
 
-import io.reactivex.Observable;
-import io.reactivex.functions.Function;
-import prot3ct.workit.config.ApiConstants;
-import prot3ct.workit.data.local.UserSession;
-import prot3ct.workit.data.remote.base.AuthDataContract;
-import prot3ct.workit.view_models.LoginViewModel;
-import prot3ct.workit.models.base.HttpResponseContract;
-import prot3ct.workit.utils.GsonParser;
-import prot3ct.workit.utils.HashProvider;
-import prot3ct.workit.utils.OkHttpRequester;
+    private val hashProvider: HashProvider = HashProvider()
 
-public class AuthData implements AuthDataContract {
-    private final OkHttpRequester httpRequester;
-    private final HashProvider hashProvider;
-    private final ApiConstants apiConstants;
-    private final GsonParser jsonParser;
-    private final UserSession userSession;
+    private val apiConstants: ApiConstants = ApiConstants()
 
-    public AuthData(Context context) {
-        this.jsonParser = new GsonParser();
-        this.hashProvider = new HashProvider();
-        this.httpRequester = new OkHttpRequester();
-        this.apiConstants = new ApiConstants();
-        this.userSession = new UserSession(context);
-    }
+    private val gsonParser: GsonParser = GsonParser()
 
-    @Override
-    public Observable<Boolean> login(String email, String password) {
-        final Map<String, String> userCredentials = new HashMap<>();
-        String passHash = hashProvider.hashPassword(password);
-        userCredentials.put("email", email);
-        userCredentials.put("passHash", passHash);
+    private val userSession: UserSession = UserSession(context)
 
+    override fun login(email: String, password: String): Observable<Boolean> {
+        val userCredentials: MutableMap<String, String> = HashMap()
+        val passHash = hashProvider.hashPassword(password)
+        userCredentials["email"] = email
+        userCredentials["passHash"] = passHash
         return httpRequester
             .post(apiConstants.loginUrl(), userCredentials)
-            .map(new Function<HttpResponseContract, Boolean>() {
-                @Override
-                public Boolean apply(HttpResponseContract iHttpResponse) throws Exception {
-                    if (iHttpResponse.getCode() == apiConstants.responseErrorCode()) {
-                        throw new Error(iHttpResponse.getMessage());
-                    }
-                    String responseBody = iHttpResponse.getBody();
-                    LoginViewModel result = jsonParser.fromJson(responseBody, LoginViewModel.class);
-                    userSession.setId(result.getUserId());
-                    userSession.setEmail(result.getEmail());
-                    userSession.setFullName(result.getFullName());
-                    userSession.setAccessToken(result.getAccessToken());
-                    return true;
+            .map { iHttpResponse ->
+                if (iHttpResponse.code == apiConstants.responseErrorCode()) {
+                    throw Error(iHttpResponse.message)
                 }
-            });
+                val responseBody = iHttpResponse.body
+                val result =
+                    gsonParser.fromJson<LoginViewModel>(responseBody, LoginViewModel::class.java)
+                userSession.id = result.userId
+                userSession.email = result.email
+                userSession.fullName = result.fullName
+                userSession.accessToken = result.accessToken
+                true
+            }
     }
 
-    @Override
-    public Observable<Boolean> register(String email, String fullName, String password) {
-        Map<String, String> userCredentials = new HashMap<>();
-        String passHash = hashProvider.hashPassword(password);
-        userCredentials.put("email", email);
-        userCredentials.put("fullName", fullName);
-        userCredentials.put("passHash", passHash);
-
+    override fun register(email: String, fullName: String, password: String): Observable<Boolean> {
+        val userCredentials: MutableMap<String, String> = HashMap()
+        val passHash = hashProvider.hashPassword(password)
+        userCredentials["email"] = email
+        userCredentials["fullName"] = fullName
+        userCredentials["passHash"] = passHash
         return httpRequester
-                .post(apiConstants.registerUrl(), userCredentials)
-                .map(new Function<HttpResponseContract, Boolean>() {
-                    @Override
-                    public Boolean apply(HttpResponseContract iHttpResponse) throws Exception {
-                        if (iHttpResponse.getCode() == apiConstants.responseErrorCode()) {
-                            throw new Error(iHttpResponse.getMessage());
-                        }
-
-                        return true;
-                    }
-                });
+            .post(apiConstants.registerUrl(), userCredentials)
+            .map { iHttpResponse ->
+                if (iHttpResponse.code == apiConstants.responseErrorCode()) {
+                    throw Error(iHttpResponse.message)
+                }
+                true
+            }
     }
 
-    @Override
-    public Observable<Boolean> autoLogin() {
-        Map<String, String> body = new HashMap<>();
-        body.put("userId", userSession.getId()+"");
-        body.put("authToken", userSession.getAccessToken());
-
+    override fun autoLogin(): Observable<Boolean> {
+        val body: MutableMap<String, String?> = HashMap()
+        body["userId"] = userSession.id.toString() + ""
+        body["authToken"] = userSession.accessToken
         return httpRequester
-                .post(apiConstants.autoLoginUserUrl(), body)
-                .map(new Function<HttpResponseContract, Boolean>() {
-                    @Override
-                    public Boolean apply(HttpResponseContract iHttpResponse) throws Exception {
-                        if (iHttpResponse.getCode() == apiConstants.responseErrorCode()) {
-                            throw new Error(iHttpResponse.getMessage());
-                        }
-
-                        return Boolean.parseBoolean(iHttpResponse.getBody());
-                    }
-                });
+            .post(apiConstants.autoLoginUserUrl(), body)
+            .map { iHttpResponse ->
+                if (iHttpResponse.code == apiConstants.responseErrorCode()) {
+                    throw Error(iHttpResponse.message)
+                }
+                java.lang.Boolean.parseBoolean(iHttpResponse.body)
+            }
     }
 
-    @Override
-    public int getLoggedInUserId() {
-        return this.userSession.getId();
+    override val loggedInUserId: Int
+        get() = userSession.loggedInUserId
+    override val loggedInUserName: String
+        get() = userSession.fullName!!
+
+    override fun logoutUser() {
+        userSession.clearSession()
     }
 
-    @Override
-    public String getLoggedInUserName() {
-        return this.userSession.getFullName();
-    }
+    override val isLoggedIn: Boolean
+        get() = userSession.isLoggedIn
 
-    @Override
-    public void logoutUser() {
-        this.userSession.clearSession();
-    }
-
-    @Override
-    public boolean isLoggedIn() {
-        return this.userSession.isUserLoggedIn();
-    }
 }
