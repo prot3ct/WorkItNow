@@ -3,23 +3,27 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/prot3/Git/WorkItNow/WorkIt/app/src/main/res/layout/activity_register.xml" value="0.13269927536231885" />
+        <entry key="..\:/Users/prot3/Git/WorkItNow/WorkIt/app/src/main/res/layout/content_edit_profile.xml" value="0.13269927536231885" />
         <entry key="..\:/Users/prot3/Git/WorkItNow/WorkIt/app/src/main/res/layout/content_profile.xml" value="0.13269927536231885" />
         <entry key="..\:/Users/prot3/Git/WorkItNow/WorkIt/app/src/main/res/layout/fragment_chat.xml" value="0.1796875" />
         <entry key="..\:/Users/prot3/Git/WorkItNow/WorkIt/app/src/main/res/layout/fragment_create_task.xml" value="0.1796875" />
+        <entry key="..\:/Users/prot3/Git/WorkItNow/WorkIt/app/src/main/res/layout/fragment_list_dialogs.xml" value="0.13269927536231885" />
+        <entry key="..\:/Users/prot3/Git/WorkItNow/WorkIt/app/src/main/res/layout/fragment_list_tasks.xml" value="0.13269927536231885" />
         <entry key="..\:/Users/prot3/Git/WorkItNow/WorkIt/app/src/main/res/layout/fragment_login.xml" value="0.1796875" />
         <entry key="..\:/Users/prot3/Git/WorkItNow/WorkIt/app/src/main/res/layout/fragment_task_details.xml" value="0.13269927536231885" />
+        <entry key="..\:/Users/prot3/Git/WorkItNow/WorkIt/app/src/main/res/layout/single_assigned_task.xml" value="0.13269927536231885" />
         <entry key="..\:/Users/prot3/Git/WorkItNow/WorkIt/app/src/main/res/layout/single_completed_task.xml" value="0.1796875" />
-        <entry key="..\:/Users/user/Git/WorkItNow/WorkIt/app/src/main/res/layout/activity_create_task.xml" value="0.1038500506585613" />
-        <entry key="..\:/Users/user/Git/WorkItNow/WorkIt/app/src/main/res/layout/activity_edit_task.xml" value="0.1038500506585613" />
-        <entry key="..\:/Users/user/Git/WorkItNow/WorkIt/app/src/main/res/layout/activity_list_tasks.xml" value="0.14457831325301204" />
-        <entry key="..\:/Users/user/Git/WorkItNow/WorkIt/app/src/main/res/layout/activity_my_tasks.xml" value="0.1038500506585613" />
-        <entry key="..\:/Users/user/Git/WorkItNow/WorkIt/app/src/main/res/layout/fragment_create_task.xml" value="0.1038500506585613" />
+        <entry key="..\:/Users/prot3/Git/WorkItNow/WorkIt/app/src/main/res/layout/single_task_list_tasks.xml" value="0.1" />
+        <entry key="..\:/Users/prot3/Git/WorkItNow/WorkIt/app/src/main/res/layout/single_task_my_tasks.xml" value="0.1" />
+        <entry key="..\:/Users/prot3/Git/WorkItNow/WorkIt/app/src/main/res/layout/single_task_request.xml" value="0.13269927536231885" />
+        <entry key="..\:/Users/prot3/Git/WorkItNow/WorkIt/app/src/main/res/menu/menu_options.xml" value="0.15260416666666668" />
       </map>
     </option>
   </component>
   <component name="NullableNotNullManager">
     <option name="myDefaultNullable" value="android.support.annotation.Nullable" />
-    <option name="myDefaultNotNull" value="androidx.annotation.NonNull" />
+    <option name="myDefaultNotNull" value="android.support.annotation.NonNull" />
     <option name="myNullables">
       <value>
         <list size="12">

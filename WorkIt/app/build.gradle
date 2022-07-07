@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     defaultConfig {
         applicationId "prot3ct.workitnow"
         minSdkVersion 22
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -44,8 +44,9 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
 
     implementation('com.mikepenz:materialdrawer:6.1.2') {
-         transitive = true
-     }
+        transitive = true
+    }
 
-     implementation 'com.github.stfalcon-studio:Chatkit:0.4.1'
+    implementation 'com.github.stfalcon-studio:Chatkit:0.4.1'
+
 }

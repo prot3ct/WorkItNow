@@ -18,6 +18,7 @@
         android:required="true"/>
 
     <application
+        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:icon="@drawable/navigation_background"
         android:label="@string/app_name"
@@ -57,6 +58,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
                 android:value="AIzaSyA4t0Wp6n0os2wVPs3JRoSnDDJf49JVgFM"/>
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
     </application>
 
