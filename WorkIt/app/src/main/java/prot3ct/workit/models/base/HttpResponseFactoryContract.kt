@@ -1,10 +1,10 @@
-package prot3ct.workit.models.base;
+package prot3ct.workit.models.base
 
-import java.util.List;
-import java.util.Map;
+import prot3ct.workit.models.base.HttpResponseContract
 
-public interface HttpResponseFactoryContract {
-    HttpResponseContract createResponse(
-            final Map<String, List<String>> headers, final String body,
-            final String message, final int code);
+interface HttpResponseFactoryContract {
+    fun createResponse(
+        headers: Map<String?, List<String?>?>?, body: String?,
+        message: String?, code: Int
+    ): HttpResponseContract?
 }

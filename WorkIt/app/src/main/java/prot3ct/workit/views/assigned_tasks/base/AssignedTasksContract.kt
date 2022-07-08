@@ -1,24 +1,18 @@
-package prot3ct.workit.views.assigned_tasks.base;
+package prot3ct.workit.views.assigned_tasks.base
 
-import java.util.List;
+import prot3ct.workit.base.BaseView
+import prot3ct.workit.view_models.AssignedTasksListViewModel
 
-import prot3ct.workit.base.BaseView;
-import prot3ct.workit.view_models.AssignedTasksListViewModel;
-
-public interface AssignedTasksContract {
-    interface View extends BaseView<Presenter> {
-        void notifySuccessful(String message);
-
-        void notifyError(String errorMessage);
-
-        void filterTask(String query);
-
-        void setupTasksAdapter(final List<AssignedTasksListViewModel> tasks);
+interface AssignedTasksContract {
+    interface View : BaseView<Presenter> {
+        fun notifySuccessful(message: String)
+        fun notifyError(errorMessage: String)
+        fun filterTask(query: String)
+        fun setupTasksAdapter(tasks: List<AssignedTasksListViewModel>)
     }
 
     interface Presenter {
-        void getAssignedTasks();
-
-        void removeAssignedUser(int taskId);
+        fun getAssignedTasks(): Unit
+        fun removeAssignedUser(taskId: Int)
     }
 }

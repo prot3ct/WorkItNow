@@ -1,106 +1,54 @@
-package prot3ct.workit.models;
+package prot3ct.workit.models
 
-import com.stfalcon.chatkit.commons.models.IMessage;
-import com.stfalcon.chatkit.commons.models.MessageContentType;
+import kotlin.jvm.JvmOverloads
+import com.stfalcon.chatkit.commons.models.IMessage
+import com.stfalcon.chatkit.commons.models.MessageContentType
+import java.util.*
 
-import java.util.Date;
+class Message @JvmOverloads constructor(
+    private val id: String,
+    private val user: User,
+    private var text: String,
+    private var createdAt: Date = Date()
+) : IMessage, MessageContentType.Image,
+    MessageContentType /*and this one is for custom content type (in this case - voice message)*/ {
+    private lateinit var image: Image
+    lateinit var voice: Voice
+    override fun getId(): String {
+        return id
+    }
 
-public class Message implements IMessage,
-        MessageContentType.Image, /*this is for default image messages implementation*/
-        MessageContentType /*and this one is for custom content type (in this case - voice message)*/ {
+    override fun getText(): String {
+        return text
+    }
 
-        private String id;
-        private String text;
-        private Date createdAt;
-        private User user;
-        private Image image;
-        private Voice voice;
+    override fun getCreatedAt(): Date {
+        return createdAt
+    }
 
-    public Message(String id, User user, String text) {
-            this(id, user, text, new Date());
-        }
+    override fun getUser(): User {
+        return user
+    }
 
-    public Message(String id, User user, String text, Date createdAt) {
-            this.id = id;
-            this.text = text;
-            this.user = user;
-            this.createdAt = createdAt;
-        }
+    override fun getImageUrl(): String {
+        return image.url
+    }
 
-        @Override
-        public String getId() {
-            return id;
-        }
+    val status: String
+        get() = "Sent"
 
-        @Override
-        public String getText() {
-            return text;
-        }
+    fun setText(text: String) {
+        this.text = text
+    }
 
-        @Override
-        public Date getCreatedAt() {
-            return createdAt;
-        }
+    fun setCreatedAt(createdAt: Date) {
+        this.createdAt = createdAt
+    }
 
-        @Override
-        public User getUser() {
-            return this.user;
-        }
+    fun setImage(image: Image) {
+        this.image = image
+    }
 
-        @Override
-        public String getImageUrl() {
-            return image == null ? null : image.url;
-        }
-
-        public Voice getVoice() {
-            return voice;
-        }
-
-        public String getStatus() {
-            return "Sent";
-        }
-
-        public void setText(String text) {
-            this.text = text;
-        }
-
-        public void setCreatedAt(Date createdAt) {
-            this.createdAt = createdAt;
-        }
-
-        public void setImage(Image image) {
-            this.image = image;
-        }
-
-        public void setVoice(Voice voice) {
-            this.voice = voice;
-        }
-
-        public static class Image {
-
-            private String url;
-
-            public Image(String url) {
-                this.url = url;
-            }
-        }
-
-        public static class Voice {
-
-            private String url;
-            private int duration;
-
-            public Voice(String url, int duration) {
-                this.url = url;
-                this.duration = duration;
-            }
-
-            public String getUrl() {
-                return url;
-            }
-
-            public int getDuration() {
-                return duration;
-            }
-        }
+    class Image(val url: String)
+    class Voice(val url: String, val duration: Int)
 }

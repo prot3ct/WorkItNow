@@ -4,7 +4,6 @@ import android.content.Context
 import io.reactivex.Observable
 import prot3ct.workit.data.remote.base.AuthDataContract
 import prot3ct.workit.utils.OkHttpRequester
-import prot3ct.workit.utils.HashProvider
 import prot3ct.workit.config.ApiConstants
 import prot3ct.workit.utils.GsonParser
 import prot3ct.workit.data.local.UserSession

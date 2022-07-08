@@ -1,37 +1,29 @@
-package prot3ct.workit.models;
+package prot3ct.workit.models
 
-import java.util.List;
-import java.util.Map;
+import prot3ct.workit.models.base.HttpResponseFactoryContract
+import prot3ct.workit.models.base.HttpResponseContract
 
-import prot3ct.workit.models.base.HttpResponseContract;
-import prot3ct.workit.models.base.HttpResponseFactoryContract;
-
-public class HttpResponseFactory implements HttpResponseFactoryContract {
-
-    public HttpResponseContract createResponse(
-            final Map<String, List<String>> headers, final String body,
-            final String message, final int code) {
-
-        return new HttpResponseContract() {
-            @Override
-            public Map<String, List<String>> getHeaders() {
-                return headers;
+class HttpResponseFactory : HttpResponseFactoryContract {
+    override fun createResponse(
+        headers: Map<String, List<String>>, body: String,
+        message: String, code: Int
+    ): HttpResponseContract {
+        return object : HttpResponseContract {
+            override fun getHeaders(): Map<String, List<String>> {
+                return headers
             }
 
-            @Override
-            public String getBody() {
-                return body;
+            override fun getBody(): String {
+                return body
             }
 
-            @Override
-            public String getMessage() {
-                return message;
+            override fun getMessage(): String {
+                return message
             }
 
-            @Override
-            public int getCode() {
-                return code;
+            override fun getCode(): Int {
+                return code
             }
-        };
+        }
     }
 }

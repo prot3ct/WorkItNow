@@ -1,69 +1,45 @@
-package prot3ct.workit.models;
+package prot3ct.workit.models
 
-import com.stfalcon.chatkit.commons.models.IDialog;
-import com.stfalcon.chatkit.commons.models.IMessage;
-import com.stfalcon.chatkit.commons.models.IUser;
+import com.stfalcon.chatkit.commons.models.IDialog
+import java.util.ArrayList
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class Dialog implements IDialog<Message> {
-
-    private String id;
-    private String dialogPhoto;
-    private String dialogName;
-    private ArrayList<User> users;
-    private Message lastMessage;
-
-    private int unreadCount;
-
-    public Dialog(String id, String name, String photo,
-                  ArrayList<User> users, Message lastMessage, int unreadCount) {
-
-        this.id = id;
-        this.dialogName = name;
-        this.dialogPhoto = photo;
-        this.users = users;
-        this.lastMessage = lastMessage;
-        this.unreadCount = unreadCount;
+class Dialog(
+    private val id: String,
+    private val dialogName: String,
+    private val dialogPhoto: String,
+    private val users: ArrayList<User>,
+    private var lastMessage: Message,
+    private var unreadCount: Int
+) : IDialog<Message> {
+    override fun getId(): String {
+        return id
     }
 
-    @Override
-    public String getId() {
-        return id;
+    override fun getDialogPhoto(): String {
+        return dialogPhoto
     }
 
-    @Override
-    public String getDialogPhoto() {
-        return dialogPhoto;
+    override fun getDialogName(): String {
+        return dialogName
     }
 
-    @Override
-    public String getDialogName() {
-        return dialogName;
+    override fun getUsers(): ArrayList<User> {
+        return users
     }
 
-    @Override
-    public ArrayList<User> getUsers() {
-        return users;
+    override fun getLastMessage(): Message {
+        return lastMessage
     }
 
-    @Override
-    public Message getLastMessage() {
-        return lastMessage;
+    override fun setLastMessage(lastMessage: Message) {
+        this.lastMessage = lastMessage
     }
 
-    @Override
-    public void setLastMessage(Message lastMessage) {
-        this.lastMessage = lastMessage;
+    override fun getUnreadCount(): Int {
+        return unreadCount
     }
 
-    @Override
-    public int getUnreadCount() {
-        return unreadCount;
-    }
-
-    public void setUnreadCount(int unreadCount) {
-        this.unreadCount = unreadCount;
+    fun setUnreadCount(unreadCount: Int) {
+        this.unreadCount = unreadCount
     }
 }

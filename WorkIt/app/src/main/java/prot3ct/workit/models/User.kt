@@ -1,37 +1,22 @@
-package prot3ct.workit.models;
+package prot3ct.workit.models
 
-import com.stfalcon.chatkit.commons.models.IUser;
+import com.stfalcon.chatkit.commons.models.IUser
 
-public class User implements IUser {
-
-    private String id;
-    private String name;
-    private String avatar;
-    private boolean online;
-
-    public User(String id, String name, String avatar, boolean online) {
-        this.id = id;
-        this.name = name;
-        this.avatar = avatar;
-        this.online = online;
+class User(
+    private val id: String,
+    private val name: String,
+    private val avatar: String,
+    val isOnline: Boolean
+) : IUser {
+    override fun getId(): String {
+        return id
     }
 
-    @Override
-    public String getId() {
-        return id;
+    override fun getName(): String {
+        return name
     }
 
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public boolean isOnline() {
-        return online;
+    override fun getAvatar(): String {
+        return avatar
     }
 }

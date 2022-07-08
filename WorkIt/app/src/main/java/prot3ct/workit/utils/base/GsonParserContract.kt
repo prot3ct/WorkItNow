@@ -1,10 +1,8 @@
-package prot3ct.workit.utils.base;
+package prot3ct.workit.utils.base
 
-import java.lang.reflect.Type;
-import java.util.List;
+import java.lang.reflect.Type
 
-public interface GsonParserContract {
-    String toJson(Object src);
-
-    <T> T fromJson(String json, Type classOfT);
+interface GsonParserContract {
+    fun toJson(src: Any): String
+    fun <T> fromJson(json: String, classOfT: Type): T
 }

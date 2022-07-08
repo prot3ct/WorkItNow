@@ -1,17 +1,19 @@
-package prot3ct.workit.utils.base;
+package prot3ct.workit.utils.base
 
-import java.util.Map;
+import io.reactivex.Observable
+import prot3ct.workit.models.base.HttpResponseContract
 
-import io.reactivex.Observable;
-import prot3ct.workit.models.base.HttpResponseContract;
+interface OkHttpRequesterContract {
+    operator fun get(url: String): Observable<HttpResponseContract>
+    operator fun get(
+        url: String,
+        headers: Map<String, String>
+    ): Observable<HttpResponseContract>
 
-public interface OkHttpRequesterContract {
-
-    Observable<HttpResponseContract> get(final String url);
-
-    Observable<HttpResponseContract> get(final String url, final Map<String, String> headers);
-
-    Observable<HttpResponseContract> post(final String url, final Map<String, String> body);
-
-    Observable<HttpResponseContract> post(final String url, final Map<String, String> body, final Map<String, String> headers);
+    fun post(url: String, body: Map<String, String>): Observable<HttpResponseContract>
+    fun post(
+        url: String,
+        body: Map<String, String>,
+        headers: Map<String, String>
+    ): Observable<HttpResponseContract>
 }

@@ -1,24 +1,23 @@
-package prot3ct.workit.models;
+package prot3ct.workit.models
 
-import prot3ct.workit.models.base.LocationContract;
+import prot3ct.workit.models.base.LocationContract
 
-public class Location implements LocationContract {
-    private double lat;
-    private double lng;
-
-    public double getLat() {
-        return lat;
+class Location : LocationContract {
+    private var lat = 0.0
+    private var lng = 0.0
+    override fun getLat(): Double {
+        return lat
     }
 
-    public void setLat(double lat) {
-        this.lat = lat;
+    override fun setLat(lat: Double) {
+        this.lat = lat
     }
 
-    public double getLng() {
-        return lng;
+    override fun getLng(): Double {
+        return lng
     }
 
-    public void setLng(double lng) {
-        this.lng = lng;
+    override fun setLng(lng: Double) {
+        this.lng = lng
     }
 }

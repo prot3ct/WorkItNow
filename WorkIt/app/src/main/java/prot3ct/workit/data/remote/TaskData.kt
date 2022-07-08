@@ -122,8 +122,8 @@ class TaskData(context: Context) : TaskDataContract {
                 }
                 val responseBody = iHttpResponse.body
                 jsonParser.fromJson(
-                    responseBody,
-                    object : TypeToken<List<AssignedTasksListViewModel?>?>() {}.type
+                    responseBody ?: "",
+                    object : TypeToken<List<AssignedTasksListViewModel>>() {}.type
                 )
             }
     override val myTasks: Observable<List<MyTasksListViewModel>>
@@ -134,7 +134,7 @@ class TaskData(context: Context) : TaskDataContract {
                 }
                 val responseBody = iHttpResponse.body
                 jsonParser.fromJson(
-                    responseBody,
+                    responseBody ?: "",
                     object : TypeToken<List<MyTasksListViewModel?>?>() {}.type
                 )
             }

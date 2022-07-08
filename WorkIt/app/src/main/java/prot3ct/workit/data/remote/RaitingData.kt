@@ -4,14 +4,11 @@ import android.content.Context
 import io.reactivex.Observable
 import prot3ct.workit.data.remote.base.RaitingDataContract
 import prot3ct.workit.utils.OkHttpRequester
-import prot3ct.workit.utils.HashProvider
 import prot3ct.workit.config.ApiConstants
 import prot3ct.workit.utils.GsonParser
 import prot3ct.workit.data.local.UserSession
-import prot3ct.workit.models.base.HttpResponseContract
 import java.lang.Error
 import java.util.HashMap
-import kotlin.Throws
 
 class RaitingData(context: Context) : RaitingDataContract {
     private val httpRequester: OkHttpRequester = OkHttpRequester()
