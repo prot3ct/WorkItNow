@@ -7,6 +7,7 @@ import prot3ct.workit.utils.OkHttpRequester
 import prot3ct.workit.config.ApiConstants
 import prot3ct.workit.utils.GsonParser
 import prot3ct.workit.data.local.UserSession
+import prot3ct.workit.utils.HashProvider
 import prot3ct.workit.view_models.ProfileDetailsViewModel
 import java.lang.Error
 import kotlin.collections.HashMap
@@ -46,7 +47,7 @@ class UserData(context: Context) : UserDataContract {
         profileDetails["phone"] = phone
         profileDetails["profilePictureAsString"] = profilePictureAsString
         return httpRequester
-            .put(apiConstants.updateProfile(userSession.id), profileDetails, headers)
+            .put(apiConstants.updateProfile(userSession.id), profileDetails, headers.toMutableMap())
             .map { iHttpResponse ->
                 if (iHttpResponse.code == apiConstants.responseErrorCode()) {
                     throw Error(iHttpResponse.message)

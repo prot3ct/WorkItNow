@@ -4,7 +4,6 @@ import io.reactivex.Observable
 import prot3ct.workit.utils.OkHttpRequester
 import prot3ct.workit.config.ApiConstants
 import prot3ct.workit.utils.GsonParser
-import prot3ct.workit.models.base.LocationContract
 import org.json.JSONObject
 import prot3ct.workit.models.Location
 import java.lang.Error
@@ -16,7 +15,7 @@ class LocationData {
 
     private val jsonParser: GsonParser = GsonParser()
 
-    fun getLatLng(location: String?): Observable<LocationContract> {
+    fun getLatLng(location: String?): Observable<Location> {
         return httpRequester[apiConstants.getLocationLatLngUrl(location!!)]
             .map { iHttpResponse ->
                 if (iHttpResponse.code == apiConstants.responseErrorCode()) {

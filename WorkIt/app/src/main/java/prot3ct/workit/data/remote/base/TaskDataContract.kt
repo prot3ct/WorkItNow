@@ -17,7 +17,7 @@ interface TaskDataContract {
     fun updateTask(
         taskId: Int, title: String, startDate: String, length: String,
         description: String, city: String, address: String, reward: String
-    ): Observable<Boolean?>?
+    ): Observable<Boolean>
 
     fun getTaskDetails(taskId: Int): Observable<TaskDetailViewModel>
 

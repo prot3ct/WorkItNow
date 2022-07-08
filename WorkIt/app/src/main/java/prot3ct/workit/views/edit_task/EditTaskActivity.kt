@@ -1,33 +1,30 @@
-package prot3ct.workit.views.edit_task;
+package prot3ct.workit.views.edit_task
 
-import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import prot3ct.workit.R
+import prot3ct.workit.views.edit_task.EditTaskFragment
+import prot3ct.workit.views.edit_task.EditTaskPresenter
+import prot3ct.workit.views.edit_task.base.EditTaskContract
 
-import androidx.appcompat.app.AppCompatActivity;
+class EditTaskActivity : AppCompatActivity() {
 
-import prot3ct.workit.R;
-import prot3ct.workit.views.edit_task.base.EditTaskContract;
+    private lateinit var presenter: EditTaskContract.Presenter
 
-public class EditTaskActivity extends AppCompatActivity {
-    private EditTaskContract.Presenter presenter;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_task);
-
-        EditTaskFragment editTaskFragment =
-                (EditTaskFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_edit_task)
+        var editTaskFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as EditTaskFragment?
         if (editTaskFragment == null) {
-            editTaskFragment = EditTaskFragment.newInstance();
-
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.fragment_container, editTaskFragment)
-                    .commit();
+            editTaskFragment = EditTaskFragment.newInstance()
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragment_container, editTaskFragment)
+                .commit()
         }
 
-        this.presenter = new EditTaskPresenter(editTaskFragment, this);
-        editTaskFragment.setPresenter(this.presenter);
+        presenter = EditTaskPresenter(editTaskFragment, this)
+        editTaskFragment!!.setPresenter(presenter)
     }
 }

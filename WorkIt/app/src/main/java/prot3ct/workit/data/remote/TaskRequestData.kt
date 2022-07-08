@@ -34,10 +34,10 @@ class TaskRequestData(context: Context) : TaskRequestDataContract {
 
     override fun updateTaskRequest(taskRequestId: Int, status: Int): Observable<Boolean> {
         val body: MutableMap<String, String> = HashMap()
-        body["taskRequestId"] = Integer.toString(taskRequestId)
-        body["requestStatusId"] = Integer.toString(status)
+        body["taskRequestId"] = taskRequestId.toString()
+        body["requestStatusId"] = status.toString()
         return httpRequester
-            .put(apiConstants.updateTaskRequestUrl(taskRequestId), body, headers)
+            .put(apiConstants.updateTaskRequestUrl(taskRequestId), body, headers.toMutableMap())
             .map { iHttpResponse ->
                 if (iHttpResponse.code == apiConstants.responseErrorCode()) {
                     throw Error(iHttpResponse.body)

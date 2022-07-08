@@ -1,38 +1,32 @@
-package prot3ct.workit.views.completed_tasks.base;
+package prot3ct.workit.views.completed_tasks.base
 
-import java.util.List;
+import prot3ct.workit.base.BaseView
+import prot3ct.workit.view_models.CompletedTasksListViewModel
 
-import prot3ct.workit.base.BaseView;
-import prot3ct.workit.view_models.CompletedTasksListViewModel;
-
-public interface CompletedTasksContract {
-    interface View extends BaseView<Presenter> {
-        void showDialogForLoading();
-
-        void dismissDialog();
-
-        void setupTasksAdapter(final List<CompletedTasksListViewModel> tasks);
-
-        void notifyError(String msg);
-
-        void notifySuccessful(String msg);
-
-        void filterTask(String query);
-
-        void showDialog();
-
-        void postRaiting(int value, String descrption);
-
-        void updateSelectedInfo(int taskId, int supervisorId, int taskerId);
-
-        int getLoggedInUserId();
+interface CompletedTasksContract {
+    interface View : BaseView<Presenter> {
+        fun showDialogForLoading()
+        fun dismissDialog()
+        fun setupTasksAdapter(tasks: List<CompletedTasksListViewModel>)
+        fun notifyError(msg: String)
+        fun notifySuccessful(msg: String)
+        fun filterTask(query: String)
+        fun showDialog()
+        fun postRaiting(value: Int, descrption: String)
+        fun updateSelectedInfo(taskId: Int, supervisorId: Int, taskerId: Int)
+        val loggedInUserId: Int
     }
 
     interface Presenter {
-        void getCompletedTasks();
+        val completedTasks: Unit
+        fun createRating(
+            value: Int,
+            description: String,
+            receiverUserId: Int,
+            taskId: Int,
+            receiverUserRoleId: Int
+        )
 
-        void createRating(int value, String description, int receiverUserId, int taskId, int receiverUserRoleId);
-
-        int getLoggedInUserId();
+        val loggedInUserId: Int
     }
 }

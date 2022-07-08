@@ -25,7 +25,7 @@ class AssignedTasksAdapter internal constructor(
     presenter: AssignedTasksContract.Presenter
 ) : RecyclerView.Adapter<AssignedTasksAdapter.TaskViewHolder>() {
     private val presenter: AssignedTasksContract.Presenter
-    private lateinit var allTasks: List<AssignedTasksListViewModel> = listOf()
+    private val allTasks: List<AssignedTasksListViewModel> = tasks.toList()
     private val context: Context
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -137,8 +137,6 @@ class AssignedTasksAdapter internal constructor(
     }
 
     init {
-        allTasks = muta(tasks)
-        allTasks.addAll(tasks)
         this.context = context
         this.presenter = presenter
     }

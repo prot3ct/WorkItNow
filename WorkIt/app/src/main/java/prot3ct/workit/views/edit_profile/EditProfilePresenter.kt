@@ -1,81 +1,64 @@
-package prot3ct.workit.views.edit_profile;
+package prot3ct.workit.views.edit_profile
 
-import android.content.Context;
+import android.content.Context
+import io.reactivex.Observer
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import prot3ct.workit.data.remote.UserData
+import prot3ct.workit.view_models.ProfileDetailsViewModel
+import prot3ct.workit.views.edit_profile.base.EditProfileContract
 
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import prot3ct.workit.data.remote.UserData;
-import prot3ct.workit.view_models.ProfileDetailsViewModel;
-import prot3ct.workit.views.edit_profile.base.EditProfileContract;
-
-public class EditProfilePresenter implements EditProfileContract.Presenter {
-    private EditProfileContract.View view;
-    private UserData userData;
-
-    public EditProfilePresenter(EditProfileContract.View view, Context context) {
-        this.view = view;
-        userData = new UserData(context);
-    }
-
-    @Override
-    public void getProfileDetails(int userId) {
+class EditProfilePresenter(private val view: EditProfileContract.View, context: Context) :
+    EditProfileContract.Presenter {
+    private val userData: UserData
+    override fun getProfileDetails(userId: Int) {
         userData.getProfileDetails(userId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                new Observer<ProfileDetailsViewModel>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
+                object : Observer<ProfileDetailsViewModel> {
+                    override fun onSubscribe(d: Disposable) {}
+                    override fun onNext(profile: ProfileDetailsViewModel) {
+                        view.updateProfile(profile)
                     }
 
-                    @Override
-                    public void onNext(ProfileDetailsViewModel profile) {
-                        view.updateProfile(profile);
+                    override fun onError(e: Throwable) {
+                        e.printStackTrace()
+                        view.notifyError("Error loading profile.")
                     }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        view.notifyError("Error loading profile.");
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
-                });
+                    override fun onComplete() {}
+                })
     }
 
-    @Override
-    public void updateProfile(String fullName, String phone, String profilePictureAsString) {
+    override fun updateProfile(fullName: String, phone: String, profilePictureAsString: String) {
         userData.updateProfile(fullName, phone, profilePictureAsString)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        new Observer<Boolean>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                                view.showDialogforLoading();
-                            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                object : Observer<Boolean> {
+                    override fun onSubscribe(d: Disposable) {
+                        view.showDialogforLoading()
+                    }
 
-                            @Override
-                            public void onNext(Boolean profile) {
-                                view.notifySuccessful("Profile updated successfully.");
-                                view.dismissDialog();
-                                view.showProfileActivity();
-                            }
+                    override fun onNext(profile: Boolean) {
+                        view.notifySuccessful("Profile updated successfully.")
+                        view.dismissDialog()
+                        view.showProfileActivity()
+                    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                view.dismissDialog();
-                                e.printStackTrace();
-                                view.notifyError("Error updating profile.");
-                            }
+                    override fun onError(e: Throwable) {
+                        view.dismissDialog()
+                        e.printStackTrace()
+                        view.notifyError("Error updating profile.")
+                    }
 
-                            @Override
-                            public void onComplete() {
-                            }
-                        });
+                    override fun onComplete() {}
+                })
+    }
+
+    init {
+        userData = UserData(context)
     }
 }

@@ -1,196 +1,132 @@
-package prot3ct.workit.views.list_dialogs;
+package prot3ct.workit.views.list_dialogs
 
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.TimePicker;
-import android.widget.Toast;
+import prot3ct.workit.utils.WorkItProgressDialog
+import com.stfalcon.chatkit.dialogs.DialogsList
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.os.Bundle
+import prot3ct.workit.R
+import prot3ct.workit.views.navigation.DrawerUtil
+import android.widget.Toast
+import prot3ct.workit.view_models.DialogsListViewModel
+import com.stfalcon.chatkit.dialogs.DialogsListAdapter
+import android.graphics.BitmapFactory
+import android.content.Intent
+import android.util.Base64
+import android.view.View
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
+import prot3ct.workit.models.Dialog
+import prot3ct.workit.models.Message
+import prot3ct.workit.models.User
+import prot3ct.workit.views.chat.ChatActivity
+import prot3ct.workit.views.list_dialogs.base.ListDialogsContract
+import java.text.DateFormat
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
 
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
+class ListDialogsFragment : Fragment(), ListDialogsContract.View {
+    private lateinit var presenter: ListDialogsContract.Presenter
+    private var dialog: WorkItProgressDialog = WorkItProgressDialog(context)
+    private lateinit var toolbar: Toolbar
+    private lateinit var dialogsListView: DialogsList
+    private lateinit var dialogsToBeAdded: ArrayList<Dialog>
 
-import com.stfalcon.chatkit.commons.ImageLoader;
-import com.stfalcon.chatkit.dialogs.DialogsList;
-import com.stfalcon.chatkit.dialogs.DialogsListAdapter;
-
-import java.lang.reflect.Array;
-import java.security.SecureRandom;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
-
-import prot3ct.workit.R;
-import prot3ct.workit.models.Dialog;
-import prot3ct.workit.models.Message;
-import prot3ct.workit.models.User;
-import prot3ct.workit.utils.WorkItProgressDialog;
-import prot3ct.workit.view_models.DialogsListViewModel;
-import prot3ct.workit.view_models.TaskDetailViewModel;
-import prot3ct.workit.views.chat.ChatActivity;
-import prot3ct.workit.views.list_dialogs.base.ListDialogsContract;
-import prot3ct.workit.views.list_tasks.ListTasksActivity;
-import prot3ct.workit.views.navigation.DrawerUtil;
-
-public class ListDialogsFragment extends Fragment implements ListDialogsContract.View {
-    private ListDialogsContract.Presenter presenter;
-    private Context context;
-
-    private WorkItProgressDialog dialog;
-    private Toolbar toolbar;
-    private DialogsList dialogsListView;
-    private ArrayList<Dialog> dialogsToBeAdded;
-
-    public ListDialogsFragment() {
-        // Required empty public constructor
+    override fun setPresenter(presenter: ListDialogsContract.Presenter) {
+        this.presenter = presenter
     }
 
-    private ArrayList<Dialog> dialogs = new ArrayList<Dialog>();
-
-    public static ListDialogsFragment newInstance() {
-        return new ListDialogsFragment();
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_list_dialogs, container, false)
+        toolbar = view.findViewById(R.id.id_drawer_toolbar)
+        dialog = WorkItProgressDialog(context)
+        dialogsToBeAdded = ArrayList()
+        dialogsListView = view.findViewById(R.id.dialogsList)
+        val drawer = DrawerUtil(this.activity, toolbar)
+        drawer.getDrawer()
+        presenter.dialogs
+        return view
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        this.context = context;
+    override fun notifyError(errorMessage: String) {
+        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
     }
 
-    @Override
-    public void setPresenter(ListDialogsContract.Presenter presenter) {
-        this.presenter = presenter;
+    override fun notifySuccessful() {
+        Toast.makeText(context, "Task updated successfully", Toast.LENGTH_SHORT).show()
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_list_dialogs, container, false);
-
-        this.toolbar = view.findViewById(R.id.id_drawer_toolbar);
-        this.dialog = new WorkItProgressDialog(context);
-        this.dialogsToBeAdded = new ArrayList<>();
-        this.dialogsListView = view.findViewById(R.id.dialogsList);
-
-        DrawerUtil drawer = new DrawerUtil(this.getActivity(), this.toolbar);
-        drawer.getDrawer();
-
-        presenter.getDialogs();
-
-        return view;
+    override fun showDialogforLoading() {
+        dialog.showProgress("Creating task...")
     }
 
-    @Override
-    public void notifyError(String errorMessage) {
-        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+    override fun dismissDialog() {
+        dialog.dismissProgress()
     }
 
-    @Override
-    public void notifySuccessful() {
-        Toast.makeText(getContext(), "Task updated successfully", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void showDialogforLoading() {
-        this.dialog.showProgress("Creating task...");
-    }
-
-    @Override
-    public void dismissDialog() {
-        this.dialog.dismissProgress();
-    }
-
-    @Override
-    public void updateDialogs(List<DialogsListViewModel> dialogs) {
-        for (DialogsListViewModel dialog: dialogs) {
-            User lastMessageUser = new User(1+"", "", null, false);
-
-            Message lastMessage;
-            if (dialog.getLastMessageText() == null) {
-            lastMessage = new Message(1+"", lastMessageUser, "", new Date());
+    override fun updateDialogs(dialogs: List<DialogsListViewModel>) {
+        for ((dialogId, user1Id, user1Name, user2Name, user2Id, user1Picture, user2Picture, lastMessageText, lastMessageCreatedAt) in dialogs) {
+            val lastMessageUser = User(1.toString() + "", "", null, false)
+            var lastMessage: Message
+            val format: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.ENGLISH)
+            var lastMessageDate: Date? = null
+            try {
+                lastMessageDate = format.parse(lastMessageCreatedAt)
+            } catch (e: ParseException) {
+                e.printStackTrace()
             }
-            else {
-                DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.ENGLISH);
-                Date lastMessageDate = null;
-                try {
-                    lastMessageDate = format.parse(dialog.getLastMessageCreatedAt());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                lastMessage = new Message(1+"", lastMessageUser, dialog.getLastMessageText(), lastMessageDate);
+            lastMessage =
+                Message(1.toString() + "", lastMessageUser, lastMessageText, lastMessageDate!!)
+            var dialogName: String
+            var picture: String
+            var userChattingWith: User
+            if (presenter.loggedInUserId == user1Id) {
+                dialogName = user2Name
+                picture = user2Picture
+                userChattingWith = User(user2Id.toString() + "", user2Name, null, false)
+            } else {
+                dialogName = user1Name
+                picture = user1Picture
+                userChattingWith = User(user1Id.toString() + "", user1Name, null, false)
             }
-
-            String dialogName;
-            String picture;
-            User userChattingWith;
-            if (presenter.getLoggedInUserId() == dialog.getUser1Id()) {
-                dialogName = dialog.getUser2Name();
-                picture = dialog.getUser2Picture();
-                userChattingWith = new User(dialog.getUser2Id()+"", dialog.getUser2Name(), null, false);
-            }
-            else {
-                dialogName = dialog.getUser1Name();
-                picture = dialog.getUser1Picture();
-                userChattingWith = new User(dialog.getUser1Id()+"", dialog.getUser1Name(), null, false);
-            }
-
-            ArrayList<User> users = new ArrayList<>();
-            users.add(userChattingWith);
-
-            Dialog dialogToBeAdded = new Dialog(dialog.getDialogId()+"", dialogName, picture, users, lastMessage, 0);
-            dialogsToBeAdded.add(dialogToBeAdded);
+            val users = ArrayList<User>()
+            users.add(userChattingWith)
+            val dialogToBeAdded =
+                Dialog(dialogId.toString() + "", dialogName, picture, users, lastMessage, 0)
+            dialogsToBeAdded.add(dialogToBeAdded)
         }
-
-        DialogsListAdapter dialogsListAdapter = new DialogsListAdapter<>(new ImageLoader() {
-            @Override
-            public void loadImage(ImageView imageView, String url, Object payload) {
-                if(url == null) {
-                    imageView.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.blank_profile_picture));
-                }
-                else {
-                    byte[] decodedString = Base64.decode(url, Base64.DEFAULT);
-                    Bitmap bmp = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                    imageView.setImageBitmap(bmp);
+        val dialogsListAdapter: DialogsListAdapter<Dialog> =
+            DialogsListAdapter<Dialog> { imageView, url, payload ->
+                if (url == null) {
+                    imageView.setImageDrawable(requireActivity().resources.getDrawable(R.drawable.blank_profile_picture))
+                } else {
+                    val decodedString = Base64.decode(url, Base64.DEFAULT)
+                    val bmp = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+                    imageView.setImageBitmap(bmp)
                 }
             }
-        });
-        dialogsListAdapter.setItems(dialogsToBeAdded);
-
-        dialogsListAdapter.setOnDialogClickListener(new DialogsListAdapter.OnDialogClickListener<Dialog>() {
-            @Override
-            public void onDialogClick(Dialog dialog) {
-                showChatActivity(Integer.parseInt(dialog.getId()));
-            }
-        });
-
-
-        dialogsListView.setAdapter(dialogsListAdapter);
+        dialogsListAdapter.setItems(dialogsToBeAdded)
+        dialogsListAdapter.setOnDialogClickListener { dialog ->
+            showChatActivity(
+                dialog.id.toInt()
+            )
+        }
+        dialogsListView.setAdapter(dialogsListAdapter)
     }
 
-    public void showChatActivity(int dialogId) {
-        Intent intent = new Intent(this.context, ChatActivity.class);
-        intent.putExtra("dialogId", dialogId);
-        startActivity(intent);
+    private fun showChatActivity(dialogId: Int) {
+        val intent = Intent(context, ChatActivity::class.java)
+        intent.putExtra("dialogId", dialogId)
+        startActivity(intent)
+    }
+
+    companion object {
+        fun newInstance(): ListDialogsFragment {
+            return ListDialogsFragment()
+        }
     }
 }

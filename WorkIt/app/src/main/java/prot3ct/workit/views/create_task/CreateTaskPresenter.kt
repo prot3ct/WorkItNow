@@ -1,89 +1,72 @@
-package prot3ct.workit.views.create_task;
+package prot3ct.workit.views.create_task
 
-import android.content.Context;
-import android.util.Log;
+import android.content.Context
+import io.reactivex.Observer
+import prot3ct.workit.data.remote.TaskData
+import prot3ct.workit.data.remote.LocationData
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import prot3ct.workit.views.create_task.base.CreateTaskContract
 
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import prot3ct.workit.data.remote.LocationData;
-import prot3ct.workit.data.remote.TaskData;
-import prot3ct.workit.views.create_task.base.CreateTaskContract;
-
-public class CreateTaskPresenter implements CreateTaskContract.Presenter {
-    private CreateTaskContract.View view;
-    private TaskData taskData;
-    private LocationData locationData;
-
-    public CreateTaskPresenter(CreateTaskContract.View view, Context context) {
-        this.view = view;
-        this.taskData = new TaskData(context);
-        this.locationData = new LocationData();
-    }
-
-    @Override
-    public void createTask(String title, String startDate, String length,
-                           String description, String city, String address, String reward ) {
+class CreateTaskPresenter(private val view: CreateTaskContract.View, context: Context?) :
+    CreateTaskContract.Presenter {
+    private val taskData: TaskData
+    private val locationData: LocationData
+    override fun createTask(
+        title: String, startDate: String, length: String,
+        description: String, city: String, address: String, reward: String
+    ) {
         taskData.createTask(title, startDate, length, description, city, address, reward)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        new Observer<Boolean>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                                view.showDialogforLoading();
-                            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                object : Observer<Boolean?> {
+                    override fun onSubscribe(d: Disposable) {
+                        view.showDialogforLoading()
+                    }
 
-                            @Override
-                            public void onNext(Boolean value) {
-                                view.notifySuccessful();
-                                view.showListJobsActivity();
-                                view.dismissDialog();
-                            }
+                    override fun onNext(value: Boolean?) {
+                        view.notifySuccessful()
+                        view.showListJobsActivity()
+                        view.dismissDialog()
+                    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                view.notifyError("Error ocurred when trying to create task. Please try again.");
-                                view.dismissDialog();
-                            }
+                    override fun onError(e: Throwable) {
+                        view.notifyError("Error ocurred when trying to create task. Please try again.")
+                        view.dismissDialog()
+                    }
 
-                            @Override
-                            public void onComplete() {
-                            }
-                        });
+                    override fun onComplete() {}
+                })
     }
 
-    @Override
-    public void checkIfLocationExists(String location) {
+    override fun checkIfLocationExists(location: String) {
         locationData.checkIfLocationExists(location)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        new Observer<Boolean>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                object : Observer<Boolean> {
+                    override fun onSubscribe(d: Disposable) {}
+                    override fun onNext(result: Boolean) {
+                        if (result) {
+                            view.createTask()
+                        } else {
+                            view.notifyInvalidLocation()
+                        }
+                    }
 
-                            @Override
-                            public void onNext(Boolean result) {
-                                if (result) {
-                                    view.createTask();
-                                }
-                                else {
-                                    view.notifyInvalidLocation();
-                                }
-                            }
+                    override fun onError(e: Throwable) {
+                        e.printStackTrace()
+                        view.notifyError("Error validating location.")
+                    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                e.printStackTrace();
-                                view.notifyError("Error validating location.");
-                            }
+                    override fun onComplete() {}
+                })
+    }
 
-                            @Override
-                            public void onComplete() {
-                            }
-                        });
+    init {
+        taskData = TaskData(context!!)
+        locationData = LocationData()
     }
 }

@@ -10,7 +10,7 @@ class GsonParser : GsonParserContract {
         return gson.toJson(src)
     }
 
-    override fun <T> fromJson(json: String, classOfT: Type): T {
+    override fun <T> fromJson(json: String?, classOfT: Type): T {
         val gson = Gson()
         return gson.fromJson(json, classOfT)
     }

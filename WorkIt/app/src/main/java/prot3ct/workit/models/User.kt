@@ -5,7 +5,7 @@ import com.stfalcon.chatkit.commons.models.IUser
 class User(
     private val id: String,
     private val name: String,
-    private val avatar: String,
+    private val avatar: String?,
     val isOnline: Boolean
 ) : IUser {
     override fun getId(): String {
@@ -16,7 +16,7 @@ class User(
         return name
     }
 
-    override fun getAvatar(): String {
+    override fun getAvatar(): String? {
         return avatar
     }
 }

@@ -225,17 +225,17 @@ public class TaskDetailsFragment extends Fragment implements TaskDetailsContract
         });
 
 
-        if (canAssignToTask.getIsUserAssignableToTaskMessage().equals("Cancel pending request"))
+        if (canAssignToTask.isUserAssignableToTaskMessage().equals("Cancel pending request"))
         {
-            this.applyForTask.setText(canAssignToTask.getIsUserAssignableToTaskMessage());
+            this.applyForTask.setText(canAssignToTask.isUserAssignableToTaskMessage());
             this.applyForTask.setTextColor(getResources().getColor(R.color.md_white_1000));
             this.applyForTask.setBackgroundColor(getResources().getColor(R.color.md_red_400));
 
             flag = 0;
         }
-        else if (canAssignToTask.getIsUserAssignableToTaskMessage().equals("I can't do this task anymore"))
+        else if (canAssignToTask.isUserAssignableToTaskMessage().equals("I can't do this task anymore"))
         {
-            this.applyForTask.setText(canAssignToTask.getIsUserAssignableToTaskMessage());
+            this.applyForTask.setText(canAssignToTask.isUserAssignableToTaskMessage());
             this.applyForTask.setTextColor(getResources().getColor(R.color.md_white_1000));
             this.applyForTask.setBackgroundColor(getResources().getColor(R.color.md_red_900));
 

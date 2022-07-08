@@ -1,93 +1,69 @@
-package prot3ct.workit.views.list_task_requests;
+package prot3ct.workit.views.list_task_requests
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
+import androidx.recyclerview.widget.RecyclerView
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.os.Bundle
+import prot3ct.workit.R
+import androidx.recyclerview.widget.LinearLayoutManager
+import prot3ct.workit.views.navigation.DrawerUtil
+import android.widget.Toast
+import android.content.Intent
+import android.view.View
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
+import prot3ct.workit.views.my_tasks.MyTasksActivity
+import prot3ct.workit.view_models.TaskRequestListViewModel
+import prot3ct.workit.views.list_task_requests.base.ListTaskRequestContract
+import kotlin.properties.Delegates
 
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+class ListTaskRequestsFragment : Fragment(), ListTaskRequestContract.View {
+    private lateinit var presenter: ListTaskRequestContract.Presenter
+    private lateinit var recyclerTaskRequestView: RecyclerView
+    private lateinit var toolbar: Toolbar
+    private var taskId: Int by Delegates.notNull()
 
-import java.util.List;
-
-import prot3ct.workit.R;
-import prot3ct.workit.view_models.TaskRequestListViewModel;
-import prot3ct.workit.views.my_tasks.MyTasksActivity;
-import prot3ct.workit.views.navigation.DrawerUtil;
-import prot3ct.workit.views.list_task_requests.base.ListTaskRequestContract;
-
-
-public class ListTaskRequestsFragment extends Fragment implements ListTaskRequestContract.View {
-    private ListTaskRequestContract.Presenter presenter;
-    private Context context;
-    private RecyclerView recyclerTaskRequestView;
-    private Toolbar toolbar;
-
-    private int taskId;
-
-
-    public ListTaskRequestsFragment() {
-        // Required empty public constructor
+    override fun setPresenter(presenter: ListTaskRequestContract.Presenter) {
+        this.presenter = presenter
     }
 
-    public static ListTaskRequestsFragment newInstance() {
-        return new ListTaskRequestsFragment();
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_list_task_requests, container, false)
+        toolbar = view.findViewById(R.id.id_drawer_toolbar)
+        taskId = requireActivity().intent.getIntExtra("taskId", 0)
+        recyclerTaskRequestView = view.findViewById(R.id.id_list_task_requests_list_view)
+        val llm = LinearLayoutManager(context)
+        recyclerTaskRequestView.layoutManager = llm
+        val drawer = DrawerUtil(this.activity, toolbar)
+        drawer.getDrawer()
+        presenter.getTaskRequests(taskId)
+        return view
     }
 
-    @Override
-    public void setPresenter(ListTaskRequestContract.Presenter presenter) {
-        this.presenter = presenter;
+    override fun notifySuccessful(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_list_task_requests, container, false);
-        this.toolbar = view.findViewById(R.id.id_drawer_toolbar);
-        this.taskId = getActivity().getIntent().getIntExtra("taskId", 0);
-        this.recyclerTaskRequestView = view.findViewById(R.id.id_list_task_requests_list_view);
-        LinearLayoutManager llm = new LinearLayoutManager(context);
-        recyclerTaskRequestView.setLayoutManager(llm);
-
-        DrawerUtil drawer = new DrawerUtil(this.getActivity(), this.toolbar);
-        drawer.getDrawer();
-
-        presenter.getTaskRequests(taskId);
-
-        return view;
+    override fun showMyTasksActivty() {
+        val intent = Intent(context, MyTasksActivity::class.java)
+        startActivity(intent)
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        this.context = context;
+    override fun notifyError(errorMessage: String) {
+        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
     }
 
-    @Override
-    public void notifySuccessful(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    override fun setupTaskRequestsAdapter(users: List<TaskRequestListViewModel>) {
+        val adapter = ListTaskRequestAdapter(users.toMutableList(), requireContext(), presenter)
+        recyclerTaskRequestView.adapter = adapter
     }
 
-    @Override
-    public void showMyTasksActivty() {
-        Intent intent = new Intent(this.context, MyTasksActivity.class);
-        startActivity(intent);
-    }
-
-    @Override
-    public void notifyError(String errorMessage) {
-        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void setupTaskRequestsAdapter(List<TaskRequestListViewModel> users) {
-        ListTaskRequestAdapter adapter = new ListTaskRequestAdapter(users, context, presenter);
-        recyclerTaskRequestView.setAdapter(adapter);
+    companion object {
+        fun newInstance(): ListTaskRequestsFragment {
+            return ListTaskRequestsFragment()
+        }
     }
 }

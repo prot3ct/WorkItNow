@@ -1,9 +1,5 @@
 package prot3ct.workit.views.assigned_tasks
 
-import android.content.Context
-import prot3ct.workit.views.assigned_tasks.base.AssignedTasksContract.Presenter.assignedTasks
-import prot3ct.workit.views.assigned_tasks.AssignedTasksAdapter.filter
-import prot3ct.workit.views.assigned_tasks.AssignedTasksAdapter
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -14,7 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import prot3ct.workit.view_models.AssignedTasksListViewModel
-import prot3ct.workit.views.assigned_tasks.AssignedTasksFragment
 import prot3ct.workit.views.assigned_tasks.base.AssignedTasksContract
 
 class AssignedTasksFragment : Fragment(), AssignedTasksContract.View {
@@ -47,7 +42,7 @@ class AssignedTasksFragment : Fragment(), AssignedTasksContract.View {
     }
 
     override fun setupTasksAdapter(tasks: List<AssignedTasksListViewModel>) {
-        adapter = AssignedTasksAdapter(tasks, requireContext(), presenter)
+        adapter = AssignedTasksAdapter(tasks.toMutableList(), requireContext(), presenter)
         recyclerTaskView.adapter = adapter
     }
 

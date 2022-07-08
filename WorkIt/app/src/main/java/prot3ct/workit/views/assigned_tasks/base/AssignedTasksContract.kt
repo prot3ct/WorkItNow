@@ -12,7 +12,7 @@ interface AssignedTasksContract {
     }
 
     interface Presenter {
-        fun getAssignedTasks(): Unit
+        fun getAssignedTasks()
         fun removeAssignedUser(taskId: Int)
     }
 }

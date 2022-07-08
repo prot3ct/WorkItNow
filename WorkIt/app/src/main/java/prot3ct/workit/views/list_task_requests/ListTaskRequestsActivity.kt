@@ -1,34 +1,29 @@
-package prot3ct.workit.views.list_task_requests;
+package prot3ct.workit.views.list_task_requests
 
-import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import prot3ct.workit.R
+import prot3ct.workit.views.list_task_requests.ListTaskRequestsFragment
+import prot3ct.workit.views.list_task_requests.ListTaskRequestsPresenter
+import prot3ct.workit.views.list_task_requests.base.ListTaskRequestContract
 
-import androidx.appcompat.app.AppCompatActivity;
+class ListTaskRequestsActivity : AppCompatActivity() {
 
-import prot3ct.workit.R;
-import prot3ct.workit.views.list_task_requests.base.ListTaskRequestContract;
-import prot3ct.workit.views.navigation.DrawerUtil;
+    private lateinit var presenter: ListTaskRequestContract.Presenter
 
-public class ListTaskRequestsActivity extends AppCompatActivity {
-    private ListTaskRequestContract.Presenter presenter;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_task_requests);
-
-        ListTaskRequestsFragment listTaskRequestsFragment =
-                (ListTaskRequestsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_list_task_requests)
+        var listTaskRequestsFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as ListTaskRequestsFragment?
         if (listTaskRequestsFragment == null) {
-            listTaskRequestsFragment = ListTaskRequestsFragment.newInstance();
-
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.fragment_container, listTaskRequestsFragment)
-                    .commit();
+            listTaskRequestsFragment = ListTaskRequestsFragment.newInstance()
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragment_container, listTaskRequestsFragment)
+                .commit()
         }
-
-        this.presenter = new ListTaskRequestsPresenter(listTaskRequestsFragment, this);
-        listTaskRequestsFragment.setPresenter(this.presenter);
+        presenter = ListTaskRequestsPresenter(listTaskRequestsFragment, this)
+        listTaskRequestsFragment.setPresenter(presenter)
     }
 }

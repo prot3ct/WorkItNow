@@ -9,21 +9,14 @@ class HttpResponseFactory : HttpResponseFactoryContract {
         message: String, code: Int
     ): HttpResponseContract {
         return object : HttpResponseContract {
-            override fun getHeaders(): Map<String, List<String>> {
-                return headers
-            }
-
-            override fun getBody(): String {
-                return body
-            }
-
-            override fun getMessage(): String {
-                return message
-            }
-
-            override fun getCode(): Int {
-                return code
-            }
+            override val headers: Map<String, List<String>>
+                get() = headers
+            override val body: String
+                get() = body
+            override val message: String
+                get() = message
+            override val code: Int
+                get() = code
         }
     }
 }

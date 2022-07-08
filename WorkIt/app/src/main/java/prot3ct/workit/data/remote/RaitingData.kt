@@ -7,6 +7,7 @@ import prot3ct.workit.utils.OkHttpRequester
 import prot3ct.workit.config.ApiConstants
 import prot3ct.workit.utils.GsonParser
 import prot3ct.workit.data.local.UserSession
+import prot3ct.workit.utils.HashProvider
 import java.lang.Error
 import java.util.HashMap
 

@@ -55,7 +55,7 @@ class TaskData(context: Context) : TaskDataContract {
     override fun updateTask(
         taskId: Int, title: String, startDate: String, length: String,
         description: String, city: String, address: String, reward: String
-    ): Observable<Boolean?>? {
+    ): Observable<Boolean> {
         val taskDetails: MutableMap<String, String> = HashMap()
         taskDetails["id"] = taskId.toString() + ""
         taskDetails["title"] = title
@@ -66,7 +66,7 @@ class TaskData(context: Context) : TaskDataContract {
         taskDetails["address"] = address
         taskDetails["reward"] = reward
         return httpRequester
-            .put(apiConstants.updateTaskUrl(taskId), taskDetails, headers)
+            .put(apiConstants.updateTaskUrl(taskId), taskDetails, headers.toMutableMap())
             .map { iHttpResponse ->
                 if (iHttpResponse.code == apiConstants.responseErrorCode() || iHttpResponse.code == apiConstants.reponseServerErrorCode()) {
                     throw Error(iHttpResponse.message)
@@ -88,7 +88,7 @@ class TaskData(context: Context) : TaskDataContract {
 
     override fun deleteTask(taskId: Int): Observable<Boolean> {
         return httpRequester
-            .delete(apiConstants.deleteTaskUrl(taskId), headers)
+            .delete(apiConstants.deleteTaskUrl(taskId), headers.toMutableMap())
             .map { iHttpResponse ->
                 if (iHttpResponse.code == apiConstants.responseErrorCode()) {
                     throw Error(iHttpResponse.message)
@@ -101,7 +101,7 @@ class TaskData(context: Context) : TaskDataContract {
         page: Int,
         search: String
     ): Observable<List<AvailableTasksListViewModel>> {
-        return httpRequester[apiConstants.getAvailableTasks(userSession.id, page), search, headers]
+        return httpRequester[apiConstants.getAvailableTasks(userSession.id, page), search, headers.toMutableMap()]
             .map { iHttpResponse ->
                 if (iHttpResponse.code != apiConstants.responseSuccessCode()) {
                     throw Error(iHttpResponse.message)
@@ -170,7 +170,7 @@ class TaskData(context: Context) : TaskDataContract {
         val taskDetails: MutableMap<String, String> = HashMap()
         taskDetails["taskId"] = taskId.toString()
         return httpRequester
-            .put(apiConstants.updateAssignedUser(taskId), taskDetails, headers)
+            .put(apiConstants.updateAssignedUser(taskId), taskDetails, headers.toMutableMap())
             .map { iHttpResponse ->
                 if (iHttpResponse.code == apiConstants.responseErrorCode()) {
                     throw Error(iHttpResponse.message)

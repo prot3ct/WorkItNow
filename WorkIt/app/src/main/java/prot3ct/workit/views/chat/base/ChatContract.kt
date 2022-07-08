@@ -1,30 +1,21 @@
-package prot3ct.workit.views.chat.base;
+package prot3ct.workit.views.chat.base
 
-import java.util.List;
+import prot3ct.workit.base.BaseView
+import prot3ct.workit.view_models.ListMessagesViewModel
 
-import prot3ct.workit.base.BaseView;
-import prot3ct.workit.view_models.ListMessagesViewModel;
-
-public interface ChatContract {
-    interface View extends BaseView<ChatContract.Presenter> {
-        void notifySuccessful();
-
-        void showDialogforLoading();
-
-        void dismissDialog();
-
-        void updateChat(List<ListMessagesViewModel> messages);
-
-        void notifyError(String errorMessage);
+interface ChatContract {
+    interface View : BaseView<Presenter> {
+        fun notifySuccessful()
+        fun showDialogForLoading()
+        fun dismissDialog()
+        fun updateChat(messages: List<ListMessagesViewModel>)
+        fun notifyError(errorMessage: String)
     }
 
     interface Presenter {
-        void createMessage(String text, int authorId, int dialogId, String createdAt);
-
-        int getLoggedInUserId();
-
-        String getLoggedInUserName();
-
-        void getMessages(int dialogId);
+        fun createMessage(text: String, authorId: Int, dialogId: Int, createdAt: String)
+        val loggedInUserId: Int
+        val loggedInUserName: String
+        fun getMessages(dialogId: Int)
     }
 }

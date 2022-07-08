@@ -10,7 +10,7 @@ import io.reactivex.schedulers.Schedulers;
 import prot3ct.workit.data.remote.TaskData;
 import prot3ct.workit.data.remote.LocationData;
 import prot3ct.workit.data.remote.TaskRequestData;
-import prot3ct.workit.models.base.LocationContract;
+import prot3ct.workit.models.Location;
 import prot3ct.workit.view_models.IsUserAssignableToTaskViewModel;
 import prot3ct.workit.view_models.TaskDetailViewModel;
 import prot3ct.workit.views.task_details.base.TaskDetailsContract;
@@ -116,13 +116,13 @@ public class TaskDetailsPresenter implements TaskDetailsContract.Presenter {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                new Observer<LocationContract>() {
+                new Observer<Location>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                     }
 
                     @Override
-                    public void onNext(LocationContract location) {
+                    public void onNext(Location location) {
                         view.updateMap(location.getLat(), location.getLng());
                     }
 

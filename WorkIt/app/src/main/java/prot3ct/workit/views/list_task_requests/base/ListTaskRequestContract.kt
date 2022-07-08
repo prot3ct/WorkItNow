@@ -1,27 +1,19 @@
-package prot3ct.workit.views.list_task_requests.base;
+package prot3ct.workit.views.list_task_requests.base
 
-import java.util.List;
+import prot3ct.workit.base.BaseView
+import prot3ct.workit.view_models.TaskRequestListViewModel
 
-import prot3ct.workit.base.BaseView;
-import prot3ct.workit.view_models.ProfileDetailsViewModel;
-import prot3ct.workit.view_models.TaskRequestListViewModel;
-
-public interface ListTaskRequestContract {
-    interface View extends BaseView<Presenter> {
-        void setupTaskRequestsAdapter(List<TaskRequestListViewModel> users);
-
-        void showMyTasksActivty();
-
-        void notifySuccessful(String message);
-
-        void notifyError(String errorMessage);
+interface ListTaskRequestContract {
+    interface View : BaseView<Presenter> {
+        fun setupTaskRequestsAdapter(users: List<TaskRequestListViewModel>)
+        fun showMyTasksActivty()
+        fun notifySuccessful(message: String)
+        fun notifyError(errorMessage: String)
     }
 
     interface Presenter {
-        void getTaskRequests(int taskId);
-
-        void acceptTaskRequest(int taskRequestId, int taskRequestStatusId);
-
-        void declineTaskRequest(int taskRequestId, int taskRequestStatusId);
+        fun getTaskRequests(taskId: Int)
+        fun acceptTaskRequest(taskRequestId: Int, taskRequestStatusId: Int)
+        fun declineTaskRequest(taskRequestId: Int, taskRequestStatusId: Int)
     }
 }

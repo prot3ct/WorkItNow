@@ -1,33 +1,21 @@
-package prot3ct.workit.views.create_task;
+package prot3ct.workit.views.create_task
 
-import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import prot3ct.workit.R
+import prot3ct.workit.views.create_task.CreateTaskFragment
+import prot3ct.workit.views.create_task.CreateTaskPresenter
+import prot3ct.workit.views.create_task.base.CreateTaskContract
 
-import androidx.appcompat.app.AppCompatActivity;
+class CreateTaskActivity : AppCompatActivity() {
+    private lateinit var presenter: CreateTaskContract.Presenter
 
-import prot3ct.workit.R;
-import prot3ct.workit.views.create_task.base.CreateTaskContract;
-
-public class CreateTaskActivity extends AppCompatActivity {
-    private CreateTaskContract.Presenter presenter;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_task);
-
-        CreateTaskFragment createJobFragment =
-                (CreateTaskFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-
-        if (createJobFragment == null) {
-            createJobFragment = CreateTaskFragment.newInstance();
-
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.fragment_container, createJobFragment)
-                    .commit();
-        }
-
-        this.presenter = new CreateTaskPresenter(createJobFragment, this);
-        createJobFragment.setPresenter(this.presenter);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_create_task)
+        var createJobFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as CreateTaskFragment
+        presenter = CreateTaskPresenter(createJobFragment, this)
+        createJobFragment.setPresenter(presenter)
     }
 }

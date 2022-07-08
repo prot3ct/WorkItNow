@@ -1,91 +1,76 @@
-package prot3ct.workit.views.completed_tasks;
+package prot3ct.workit.views.completed_tasks
 
-import android.content.Context;
+import android.content.Context
+import io.reactivex.Observer
+import prot3ct.workit.data.remote.TaskData
+import prot3ct.workit.data.remote.AuthData
+import prot3ct.workit.data.remote.RaitingData
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import prot3ct.workit.view_models.CompletedTasksListViewModel
+import prot3ct.workit.views.completed_tasks.base.CompletedTasksContract
 
-import java.util.List;
-
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import prot3ct.workit.data.remote.RaitingData;
-import prot3ct.workit.data.remote.TaskData;
-import prot3ct.workit.data.remote.AuthData;
-import prot3ct.workit.view_models.CompletedTasksListViewModel;
-import prot3ct.workit.views.completed_tasks.base.CompletedTasksContract;
-
-public class CompletedTasksPresenter implements CompletedTasksContract.Presenter {
-    private CompletedTasksContract.View view;
-    private TaskData taskData;
-    private AuthData authData;
-    private RaitingData raitingData;
-
-    public CompletedTasksPresenter(CompletedTasksContract.View view, Context context) {
-        this.view = view;
-        this.taskData = new TaskData(context);
-        this.authData = new AuthData(context);
-        this.raitingData = new RaitingData(context);
-    }
-
-    @Override
-    public void getCompletedTasks() {
-        taskData.getCompletedTasks()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                new Observer<List<CompletedTasksListViewModel>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                    }
-
-                    @Override
-                    public void onNext(List<CompletedTasksListViewModel> tasks) {
-                        view.setupTasksAdapter(tasks);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        view.notifyError("Error ocurred when retrieving data. Please try again.");
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
-                });
-    }
-
-    @Override
-    public int getLoggedInUserId() {
-        return this.authData.getLoggedInUserId();
-    }
-
-    @Override
-    public void createRating(int value, String description, int receiverUserId, int taskId, int receiverUserRoleId) {
-        raitingData.createRaiting(value, description, receiverUserId, taskId, receiverUserRoleId)
+class CompletedTasksPresenter(private val view: CompletedTasksContract.View, context: Context) :
+    CompletedTasksContract.Presenter {
+    private val taskData: TaskData
+    private val authData: AuthData
+    private val raitingData: RaitingData
+    override val completedTasks: Unit
+        get() {
+            taskData.completedTasks
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        new Observer<Boolean>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                                view.showDialogForLoading();
-                            }
+                    object : Observer<List<CompletedTasksListViewModel>> {
+                        override fun onSubscribe(d: Disposable) {}
+                        override fun onNext(tasks: List<CompletedTasksListViewModel>) {
+                            view.setupTasksAdapter(tasks)
+                        }
 
-                            @Override
-                            public void onNext(Boolean result) {
-                                view.dismissDialog();
-                                view.notifySuccessful("Raiting submitted successfully.");
-                            }
+                        override fun onError(e: Throwable) {
+                            view.notifyError("Error ocurred when retrieving data. Please try again.")
+                        }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                view.dismissDialog();
-                                view.notifyError("Error ocurred when submitting raiting.");
-                            }
+                        override fun onComplete() {}
+                    })
+        }
+    override val loggedInUserId: Int
+        get() = authData.loggedInUserId
 
-                            @Override
-                            public void onComplete() {
-                            }
-                        });
+    override fun createRating(
+        value: Int,
+        description: String,
+        receiverUserId: Int,
+        taskId: Int,
+        receiverUserRoleId: Int
+    ) {
+        raitingData.createRaiting(value, description, receiverUserId, taskId, receiverUserRoleId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                object : Observer<Boolean?> {
+                    override fun onSubscribe(d: Disposable) {
+                        view.showDialogForLoading()
+                    }
+
+                    override fun onNext(result: Boolean?) {
+                        view.dismissDialog()
+                        view.notifySuccessful("Raiting submitted successfully.")
+                    }
+
+                    override fun onError(e: Throwable) {
+                        view.dismissDialog()
+                        view.notifyError("Error ocurred when submitting raiting.")
+                    }
+
+                    override fun onComplete() {}
+                })
+    }
+
+    init {
+        taskData = TaskData(context)
+        authData = AuthData(context)
+        raitingData = RaitingData(context)
     }
 }

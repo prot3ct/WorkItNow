@@ -1,184 +1,151 @@
-package prot3ct.workit.views.edit_task;
+package prot3ct.workit.views.edit_task
 
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.TimePicker;
-import android.widget.Toast;
+import prot3ct.workit.utils.WorkItProgressDialog
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.os.Bundle
+import prot3ct.workit.R
+import prot3ct.workit.views.navigation.DrawerUtil
+import android.content.Intent
+import prot3ct.workit.views.list_tasks.ListTasksActivity
+import prot3ct.workit.view_models.TaskDetailViewModel
+import android.app.DatePickerDialog
+import android.app.DatePickerDialog.OnDateSetListener
+import android.app.TimePickerDialog
+import android.view.View
+import android.widget.*
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
+import prot3ct.workit.views.edit_task.base.EditTaskContract
+import java.text.SimpleDateFormat
+import java.util.*
 
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
+class EditTaskFragment : Fragment(), EditTaskContract.View {
+    private lateinit var presenter: EditTaskContract.Presenter
+    private var taskId = 0
+    private lateinit var titleTextView: TextView
+    private lateinit var startDateTextView: TextView
+    private lateinit var lengthEditText: EditText
+    private lateinit var descriptionTextView: TextView
+    private lateinit var cityTextView: TextView
+    private lateinit var addressTextView: TextView
+    private lateinit var rewardTextView: TextView
+    private lateinit var toolbar: Toolbar
+    private lateinit var saveTaskButton: Button
+    private lateinit var date: Calendar
+    private var dialog: WorkItProgressDialog = WorkItProgressDialog(context)
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import prot3ct.workit.R;
-import prot3ct.workit.view_models.TaskDetailViewModel;
-import prot3ct.workit.utils.WorkItProgressDialog;
-import prot3ct.workit.views.edit_task.base.EditTaskContract;
-import prot3ct.workit.views.list_tasks.ListTasksActivity;
-import prot3ct.workit.views.navigation.DrawerUtil;
-
-public class EditTaskFragment extends Fragment implements EditTaskContract.View {
-    private EditTaskContract.Presenter presenter;
-    private Context context;
-
-    private int taskId;
-
-    private TextView titleTextView;
-    private TextView startDateTextView;
-    private EditText lengthEditText;
-    private TextView descriptionTextView;
-    private TextView cityTextView;
-    private TextView addressTextView;
-    private TextView rewardTextView;
-    private Toolbar toolbar;
-    private Button saveTaskButton;
-
-    private Calendar date;
-
-    private WorkItProgressDialog dialog;
-
-    public EditTaskFragment() {
-        // Required empty public constructor
+    override fun setPresenter(presenter: EditTaskContract.Presenter) {
+        this.presenter = presenter
     }
 
-    public static EditTaskFragment newInstance() {
-        return new EditTaskFragment();
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_edit_task, container, false)
+        toolbar = view.findViewById(R.id.id_drawer_toolbar)
+        dialog = WorkItProgressDialog(context)
+        titleTextView = view.findViewById<View>(R.id.id_title_edit_text) as TextView
+        startDateTextView = view.findViewById<View>(R.id.id_choose_start_date_text_view) as TextView
+        lengthEditText = view.findViewById<View>(R.id.id_length_edit_text) as EditText
+        descriptionTextView = view.findViewById<View>(R.id.id_description_edit_text) as TextView
+        cityTextView = view.findViewById<View>(R.id.id_city_edit_text) as TextView
+        addressTextView = view.findViewById<View>(R.id.id_address_edit_text) as TextView
+        rewardTextView = view.findViewById<View>(R.id.id_reward_edit_text) as TextView
+        saveTaskButton = view.findViewById<View>(R.id.id_create_task_btn) as Button
+        val drawer = DrawerUtil(this.activity, toolbar)
+        drawer.getDrawer()
+        taskId = requireActivity().intent.getIntExtra("taskId", 0)
+        presenter.getTaskDetails(taskId)
+        startDateTextView.setOnClickListener { showDateTimePicker() }
+        saveTaskButton.setOnClickListener {
+            presenter.updateTask(
+                taskId,
+                titleTextView.text.toString(),
+                startDateTextView.text.toString(),
+                lengthEditText.text.toString(),
+                descriptionTextView.text.toString(),
+                cityTextView.text.toString(),
+                addressTextView.text.toString(),
+                rewardTextView.text.toString()
+            )
+        }
+        return view
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        this.context = context;
+    override fun showListJobsActivity() {
+        val intent = Intent(context, ListTasksActivity::class.java)
+        startActivity(intent)
     }
 
-    @Override
-    public void setPresenter(EditTaskContract.Presenter presenter) {
-        this.presenter = presenter;
+    override fun updateTask(task: TaskDetailViewModel) {
+        titleTextView.text = task.title
+        startDateTextView.text = task.startDate
+        lengthEditText.setText(task.length.toString())
+        descriptionTextView.text = task.description
+        cityTextView.text = task.city
+        addressTextView.text = task.address
+        rewardTextView.text = task.reward.toString()
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_edit_task, container, false);
-
-        this.toolbar = view.findViewById(R.id.id_drawer_toolbar);
-        this.dialog = new WorkItProgressDialog(context);
-        this.titleTextView = (TextView) view.findViewById(R.id.id_title_edit_text);
-        this.startDateTextView = (TextView) view.findViewById(R.id.id_choose_start_date_text_view);
-        this.lengthEditText = (EditText) view.findViewById(R.id.id_length_edit_text);
-        this.descriptionTextView = (TextView) view.findViewById(R.id.id_description_edit_text);
-        this.cityTextView = (TextView) view.findViewById(R.id.id_city_edit_text);
-        this.addressTextView = (TextView) view.findViewById(R.id.id_address_edit_text);
-        this.rewardTextView = (TextView) view.findViewById(R.id.id_reward_edit_text);
-        this.saveTaskButton = (Button) view.findViewById(R.id.id_create_task_btn);
-        DrawerUtil drawer = new DrawerUtil(this.getActivity(), this.toolbar);
-        drawer.getDrawer();
-
-        this.taskId = getActivity().getIntent().getIntExtra("taskId", 0);
-        presenter.getTaskDetails(taskId);
-
-        this.startDateTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDateTimePicker();
-            }
-        });
-
-        this.saveTaskButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                presenter.updateTask(
-                    taskId,
-                    titleTextView.getText().toString(),
-                    startDateTextView.getText().toString(),
-                    lengthEditText.getText().toString(),
-                    descriptionTextView.getText().toString(),
-                    cityTextView.getText().toString(),
-                    addressTextView.getText().toString(),
-                    rewardTextView.getText().toString()
-                );
-            }
-        });
-
-        return view;
+    override fun notifyError(errorMessage: String) {
+        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
     }
 
-    @Override
-    public void showListJobsActivity() {
-        Intent intent = new Intent(this.context, ListTasksActivity.class);
-        startActivity(intent);
+    override fun notifySuccessful() {
+        Toast.makeText(context, "Task updated successfully", Toast.LENGTH_SHORT).show()
     }
 
-    @Override
-    public void updateTask(TaskDetailViewModel task) {
-        this.titleTextView.setText(task.getTitle());
-        this.startDateTextView.setText(task.getStartDate());
-        this.lengthEditText.setText(String.valueOf(task.getLength()));
-        this.descriptionTextView.setText(task.getDescription());
-        this.cityTextView.setText(task.getCity());
-        this.addressTextView.setText(task.getAddress());
-        this.rewardTextView.setText(String.valueOf(task.getReward()));
+    override fun showDialogforLoading() {
+        dialog.showProgress("Creating task...")
     }
 
-    @Override
-    public void notifyError(String errorMessage) {
-        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+    override fun dismissDialog() {
+        dialog.dismissProgress()
     }
 
-    @Override
-    public void notifySuccessful() {
-        Toast.makeText(getContext(), "Task updated successfully", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void showDialogforLoading() {
-        this.dialog.showProgress("Creating task...");
-    }
-
-    @Override
-    public void dismissDialog() {
-        this.dialog.dismissProgress();
-    }
-
-    public void showDateTimePicker() {
-        final Calendar currentDate = Calendar.getInstance();
-        this.date = Calendar.getInstance();
-        new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
-            boolean first = true;
-
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                if (first) {
-                    date.set(year, monthOfYear, dayOfMonth);
-                    new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
-
-                        @Override
-                        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                            date.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                            date.set(Calendar.MINUTE, minute);
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd,HH:mm");
-
-                            startDateTextView.setText(dateFormat.format(date.getTime()));
-
-                            first = false;
-                        }
-                    }, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), true).show();
-
-                    first = false;
+    private fun showDateTimePicker() {
+        val currentDate = Calendar.getInstance()
+        date = Calendar.getInstance()
+        DatePickerDialog(
+            requireContext(),
+            object : OnDateSetListener {
+                var first = true
+                override fun onDateSet(
+                    view: DatePicker,
+                    year: Int,
+                    monthOfYear: Int,
+                    dayOfMonth: Int
+                ) {
+                    if (first) {
+                        date.set(year, monthOfYear, dayOfMonth)
+                        TimePickerDialog(
+                            context,
+                            { _, hourOfDay, minute ->
+                                date.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                                date.set(Calendar.MINUTE, minute)
+                                val dateFormat = SimpleDateFormat("yyyy-MM-dd,HH:mm")
+                                startDateTextView.text = dateFormat.format(date.getTime())
+                                first = false
+                            },
+                            currentDate[Calendar.HOUR_OF_DAY],
+                            currentDate[Calendar.MINUTE],
+                            true
+                        ).show()
+                        first = false
+                    }
                 }
-            }
-        }, currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DATE)).show();
+            },
+            currentDate[Calendar.YEAR],
+            currentDate[Calendar.MONTH],
+            currentDate[Calendar.DATE]
+        ).show()
+    }
+
+    companion object {
+        fun newInstance(): EditTaskFragment {
+            return EditTaskFragment()
+        }
     }
 }

@@ -1,143 +1,114 @@
-package prot3ct.workit.views.completed_tasks;
+package prot3ct.workit.views.completed_tasks
 
-import android.content.Context;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
+import android.content.Context
 
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import prot3ct.workit.utils.WorkItProgressDialog
+import androidx.recyclerview.widget.RecyclerView
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.os.Bundle
+import android.view.View
+import prot3ct.workit.R
+import androidx.recyclerview.widget.LinearLayoutManager
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import com.stepstone.apprating.AppRatingDialog
+import prot3ct.workit.view_models.CompletedTasksListViewModel
+import prot3ct.workit.views.completed_tasks.base.CompletedTasksContract
+import kotlin.properties.Delegates
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.stepstone.apprating.AppRatingDialog;
+class CompletedTasksFragment : Fragment(), CompletedTasksContract.View {
+    private lateinit var presenter: CompletedTasksContract.Presenter
+    private lateinit var adapter: CompletedTasksAdapter
+    override var loggedInUserId by Delegates.notNull<Int>()
+        private set
+    private var selectedTaskId by Delegates.notNull<Int>()
+    private var userToBeRatedId by Delegates.notNull<Int>()
+    private var receiverUserRoleId by Delegates.notNull<Int>()
+    private val dialog: WorkItProgressDialog = WorkItProgressDialog(context)
+    private lateinit var recyclerTaskView: RecyclerView
 
-import java.util.List;
-
-import prot3ct.workit.R;
-import prot3ct.workit.utils.WorkItProgressDialog;
-import prot3ct.workit.view_models.CompletedTasksListViewModel;
-import prot3ct.workit.views.completed_tasks.base.CompletedTasksContract;
-
-public class CompletedTasksFragment extends Fragment implements CompletedTasksContract.View {
-    private CompletedTasksContract.Presenter presenter;
-    private Context context;
-    private CompletedTasksAdapter adapter;
-
-    private int loggedInUserId;
-    private int selectedTaskId;
-    private int userToBeRatedId;
-    private int receiverUserRoleId;
-
-    private FloatingActionButton createTaskButton;
-    private WorkItProgressDialog dialog;
-
-    private RecyclerView recyclerTaskView;
-
-    public CompletedTasksFragment() {
-        // Required empty public constructor
+    override fun setPresenter(presenter: CompletedTasksContract.Presenter) {
+        this.presenter = presenter
     }
 
-    public static CompletedTasksFragment newInstance() {
-        return new CompletedTasksFragment();
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_completed_tasks, container, false)
+        recyclerTaskView = view.findViewById(R.id.id_list_tasks_list_view)
+        val llm = LinearLayoutManager(context)
+        recyclerTaskView.layoutManager = llm
+        presenter.completedTasks
+        loggedInUserId = presenter!!.loggedInUserId
+        return view
     }
 
-    @Override
-    public void setPresenter(CompletedTasksContract.Presenter presenter) {
-        this.presenter = presenter;
+    override fun filterTask(query: String) {
+        adapter.filter(query)
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_completed_tasks, container, false);
-
-        this.dialog = new WorkItProgressDialog(context);
-        this.recyclerTaskView = view.findViewById(R.id.id_list_tasks_list_view);
-        LinearLayoutManager llm = new LinearLayoutManager(context);
-        recyclerTaskView.setLayoutManager(llm);
-        presenter.getCompletedTasks();
-        loggedInUserId = presenter.getLoggedInUserId();
-
-        return view;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        this.context = context;
-    }
-
-    @Override
-    public void filterTask(String query) {
-        adapter.filter(query);
-    }
-
-    @Override
-    public void updateSelectedInfo(int taskId, int supervisorId, int taskerId) {
-        selectedTaskId = taskId;
+    override fun updateSelectedInfo(taskId: Int, supervisorId: Int, taskerId: Int) {
+        selectedTaskId = taskId
         if (loggedInUserId == supervisorId) {
-            userToBeRatedId = taskerId;
-            receiverUserRoleId = 3;
+            userToBeRatedId = taskerId
+            receiverUserRoleId = 3
+        } else {
+            userToBeRatedId = supervisorId
+            receiverUserRoleId = 4
         }
-        else {
-            userToBeRatedId = supervisorId;
-            receiverUserRoleId = 4;
+    }
+
+    override fun postRaiting(value: Int, description: String) {
+        presenter.createRating(
+            value,
+            description,
+            userToBeRatedId,
+            selectedTaskId,
+            receiverUserRoleId
+        )
+    }
+
+    override fun notifyError(msg: String) {
+        Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+    }
+
+    override fun notifySuccessful(msg: String) {
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun showDialogForLoading() {
+        dialog.showProgress("Loading...")
+    }
+
+    override fun dismissDialog() {
+        dialog.dismissProgress()
+    }
+
+    override fun setupTasksAdapter(tasks: List<CompletedTasksListViewModel>) {
+        adapter = CompletedTasksAdapter(tasks.toMutableList(), requireContext(), this)
+        recyclerTaskView.adapter = adapter
+    }
+
+    override fun showDialog() {
+        AppRatingDialog.Builder()
+            .setPositiveButtonText("Submit")
+            .setDefaultRating(3)
+            .setTitle("Rate user performance")
+            .setStarColor(R.color.bg_login)
+            .setTitleTextColor(R.color.md_black_1000)
+            .setNumberOfStars(5)
+            .setCommentBackgroundColor(R.color.md_blue_grey_50)
+            .setHint("Please write short review")
+            .setHintTextColor(R.color.md_black_1000) //.setWindowAnimation(R.style.MyDialogFadeAnimation)
+            .create(requireActivity())
+            .show()
+    }
+
+    companion object {
+        fun newInstance(): CompletedTasksFragment {
+            return CompletedTasksFragment()
         }
-    }
-
-    @Override
-    public void postRaiting(int value, String description) {
-        presenter.createRating(value, description, userToBeRatedId, selectedTaskId, receiverUserRoleId);
-    }
-
-    @Override
-    public void notifyError(String msg) {
-        Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void notifySuccessful(String msg) {
-        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-    }
-
-    public void showDialogForLoading() {
-        this.dialog.showProgress("Loading...");
-    }
-
-    @Override
-    public void dismissDialog() {
-        this.dialog.dismissProgress();
-    }
-
-    @Override
-    public void setupTasksAdapter(final List<CompletedTasksListViewModel> tasks) {
-        adapter = new CompletedTasksAdapter(tasks, context, this);
-        recyclerTaskView.setAdapter(adapter);
-    }
-
-    @Override
-    public void showDialog() {
-        new AppRatingDialog.Builder()
-                .setPositiveButtonText("Submit")
-                .setDefaultRating(3)
-                .setTitle("Rate user performance")
-                .setStarColor(R.color.bg_login)
-                .setTitleTextColor(R.color.md_black_1000)
-                .setNumberOfStars(5)
-                .setCommentBackgroundColor(R.color.md_blue_grey_50)
-                .setHint("Please write short review")
-                .setHintTextColor(R.color.md_black_1000)
-                //.setWindowAnimation(R.style.MyDialogFadeAnimation)
-                .create(getActivity())
-                .show();
-    }
-
-    @Override
-    public int getLoggedInUserId() {
-        return this.loggedInUserId;
     }
 }

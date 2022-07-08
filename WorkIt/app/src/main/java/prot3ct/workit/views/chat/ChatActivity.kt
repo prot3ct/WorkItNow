@@ -1,33 +1,23 @@
-package prot3ct.workit.views.chat;
+package prot3ct.workit.views.chat
 
-import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import prot3ct.workit.R
+import prot3ct.workit.views.chat.ChatFragment
+import prot3ct.workit.views.chat.ChatPresenter
+import prot3ct.workit.views.chat.base.ChatContract
 
-import androidx.appcompat.app.AppCompatActivity;
+class ChatActivity : AppCompatActivity() {
 
-import prot3ct.workit.R;
-import prot3ct.workit.views.chat.base.ChatContract;
+    private lateinit var presenter: ChatContract.Presenter
 
-public class ChatActivity extends AppCompatActivity {
-    private ChatContract.Presenter presenter;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.acitivity_chat)
+        var editTaskFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as ChatFragment
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.acitivity_chat);
-
-        ChatFragment editTaskFragment =
-                (ChatFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-
-        if (editTaskFragment == null) {
-            editTaskFragment = ChatFragment.newInstance();
-
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.fragment_container, editTaskFragment)
-                    .commit();
-        }
-
-        this.presenter = new ChatPresenter(editTaskFragment, this);
-        editTaskFragment.setPresenter(this.presenter);
+        presenter = ChatPresenter(editTaskFragment, this)
+        editTaskFragment.setPresenter(presenter)
     }
 }
