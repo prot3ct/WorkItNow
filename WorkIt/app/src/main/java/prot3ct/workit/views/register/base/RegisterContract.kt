@@ -1,21 +1,17 @@
-package prot3ct.workit.views.register.base;
+package prot3ct.workit.views.register.base
 
-import prot3ct.workit.base.BaseView;
+import prot3ct.workit.base.BaseView
 
-public interface RegisterContract {
-    interface View extends BaseView<Presenter> {
-        void showLoginActivity();
-
-        void notifySuccessful(String msg);
-
-        void notifyError(String message);
-
-        void showDialogforLoading();
-
-        void dismissDialog();
+interface RegisterContract {
+    interface View : BaseView<Presenter> {
+        fun showLoginActivity()
+        fun notifySuccessful(msg: String)
+        fun notifyError(message: String)
+        fun showDialogforLoading()
+        fun dismissDialog()
     }
 
     interface Presenter {
-        void registerUser(String email, String fullName, String password);
+        fun registerUser(email: String, fullName: String, password: String)
     }
 }

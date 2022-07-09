@@ -50,7 +50,7 @@ class EditProfileFragment : Fragment(), EditProfileContract.View {
         emailEditText = view.findViewById(R.id.id_edit_profile_email_edit_text)
         phoneEditText = view.findViewById(R.id.id_edit_profile_phone_edit_text)
         toolbar = view.findViewById(R.id.id_drawer_toolbar)
-        val drawer = DrawerUtil(this.activity, toolbar)
+        val drawer = DrawerUtil(requireActivity().parent, toolbar)
         drawer.getDrawer()
         profilePicture.setOnClickListener(View.OnClickListener {
             val pickPhoto = Intent(

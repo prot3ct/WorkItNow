@@ -1,110 +1,79 @@
-package prot3ct.workit.views.login;
+package prot3ct.workit.views.login
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.EditText
+import prot3ct.workit.utils.WorkItProgressDialog
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.os.Bundle
+import prot3ct.workit.R
+import android.content.Intent
+import android.view.View
+import android.widget.Button
+import prot3ct.workit.views.list_tasks.ListTasksActivity
+import prot3ct.workit.views.register.RegisterActivity
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import prot3ct.workit.views.login.base.LoginContract
 
-import androidx.fragment.app.Fragment;
+class LoginFragment : Fragment(), LoginContract.View {
+    private lateinit var presenter: LoginContract.Presenter
+    private lateinit var emailEditText: EditText
+    private lateinit var passwordEditText: EditText
+    private lateinit var loginButton: Button
+    private lateinit var registerButton: Button
+    private val dialog: WorkItProgressDialog = WorkItProgressDialog(context)
 
-import prot3ct.workit.R;
-import prot3ct.workit.utils.WorkItProgressDialog;
-import prot3ct.workit.views.list_tasks.ListTasksActivity;
-import prot3ct.workit.views.login.base.LoginContract;
-import prot3ct.workit.views.register.RegisterActivity;
-
-public class LoginFragment extends Fragment implements LoginContract.View {
-    private LoginContract.Presenter presenter;
-    private Context context;
-
-    private EditText emailEditText;
-    private EditText passwordEditText;
-    private Button loginButton;
-    private Button registerButton;
-
-    private WorkItProgressDialog dialog;
-
-    public LoginFragment() {
+    override fun setPresenter(presenter: LoginContract.Presenter) {
+        this.presenter = presenter
     }
 
-    public static LoginFragment newInstance() {
-        return new LoginFragment();
-    }
-
-    @Override
-    public void setPresenter(LoginContract.Presenter presenter) {
-        this.presenter = presenter;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_login, container, false);
-
-        this.dialog = new WorkItProgressDialog(context);
-        this.emailEditText = view.findViewById(R.id.id_email_edit_text);
-        this.passwordEditText = view.findViewById(R.id.id_password_edit_text);
-        this.loginButton = view.findViewById(R.id.id_login_button);
-        this.registerButton = view.findViewById(R.id.id_register_button);
-
-        if (presenter.isUserLoggedIn()) {
-            presenter.autoLoginUser();
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_login, container, false)
+        emailEditText = view.findViewById(R.id.id_email_edit_text)
+        passwordEditText = view.findViewById(R.id.id_password_edit_text)
+        loginButton = view.findViewById(R.id.id_login_button)
+        registerButton = view.findViewById(R.id.id_register_button)
+        if (presenter.isUserLoggedIn) {
+            presenter.autoLoginUser()
         }
-
-        this.loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                presenter.loginUser(emailEditText.getText().toString(), passwordEditText.getText().toString());
-            }
-        });
-
-        this.registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showRegisterActivity();
-            }
-        });
-
-        return view;
+        loginButton.setOnClickListener {
+            presenter.loginUser(
+                emailEditText.text.toString(), passwordEditText.text.toString()
+            )
+        }
+        registerButton.setOnClickListener { showRegisterActivity() }
+        return view
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        this.context = context;
+    override fun showListJobsActivity() {
+        val intent = Intent(context, ListTasksActivity::class.java)
+        startActivity(intent)
+        requireActivity().finish()
     }
 
-    @Override
-    public void showListJobsActivity() {
-        Intent intent = new Intent(this.context, ListTasksActivity.class);
-        startActivity(intent);
-        getActivity().finish();
+    override fun showRegisterActivity() {
+        val intent = Intent(context, RegisterActivity::class.java)
+        startActivity(intent)
     }
 
-    @Override
-    public void showRegisterActivity() {
-        Intent intent = new Intent(this.context, RegisterActivity.class);
-        startActivity(intent);
+    override fun notifyError(errorMessage: String) {
+        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
     }
 
-    @Override
-    public void notifyError(String errorMessage) {
-        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_LONG).show();
+    override fun showDialogforLoading() {
+        dialog.showProgress("Logging in...")
     }
 
-    @Override
-    public void showDialogforLoading() {
-        this.dialog.showProgress("Logging in...");
+    override fun dismissDialog() {
+        dialog.dismissProgress()
     }
 
-    @Override
-    public void dismissDialog() {
-        this.dialog.dismissProgress();
+    companion object {
+        fun newInstance(): LoginFragment {
+            return LoginFragment()
+        }
     }
 }

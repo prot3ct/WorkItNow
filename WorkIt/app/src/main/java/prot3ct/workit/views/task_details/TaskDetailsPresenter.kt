@@ -1,195 +1,143 @@
-package prot3ct.workit.views.task_details;
+package prot3ct.workit.views.task_details
 
-import android.content.Context;
-import android.util.Log;
+import android.content.Context
+import io.reactivex.Observer
+import prot3ct.workit.data.remote.TaskRequestData
+import prot3ct.workit.data.remote.TaskData
+import prot3ct.workit.data.remote.LocationData
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import prot3ct.workit.models.Location
+import prot3ct.workit.view_models.TaskDetailViewModel
+import prot3ct.workit.view_models.IsUserAssignableToTaskViewModel
+import prot3ct.workit.views.task_details.base.TaskDetailsContract
 
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import prot3ct.workit.data.remote.TaskData;
-import prot3ct.workit.data.remote.LocationData;
-import prot3ct.workit.data.remote.TaskRequestData;
-import prot3ct.workit.models.Location;
-import prot3ct.workit.view_models.IsUserAssignableToTaskViewModel;
-import prot3ct.workit.view_models.TaskDetailViewModel;
-import prot3ct.workit.views.task_details.base.TaskDetailsContract;
+class TaskDetailsPresenter(private val view: TaskDetailsContract.View, context: Context) :
+    TaskDetailsContract.Presenter {
 
-public class TaskDetailsPresenter implements TaskDetailsContract.Presenter {
-    private TaskDetailsContract.View view;
-    private TaskRequestData taskRequestData;
-    private TaskData taskData;
-    private LocationData locationData;
+    private val taskRequestData: TaskRequestData
+    private val taskData: TaskData
+    private val locationData: LocationData
 
-    public TaskDetailsPresenter(TaskDetailsContract.View view, Context context) {
-        this.view = view;
-        this.taskRequestData = new TaskRequestData(context);
-        this.taskData = new TaskData(context);
-        this.locationData = new LocationData();
-    }
-
-    @Override
-    public void getTaskDetails(int taskId) {
+    override fun getTaskDetails(taskId: Int) {
         taskData.getTaskDetails(taskId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        new Observer<TaskDetailViewModel>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                object : Observer<TaskDetailViewModel> {
+                    override fun onSubscribe(d: Disposable) {}
+                    override fun onNext(task: TaskDetailViewModel) {
+                        view.updateTask(task)
+                    }
 
-                            @Override
-                            public void onNext(TaskDetailViewModel task) {
-                                view.updateTask(task);
-                            }
+                    override fun onError(e: Throwable) {
+                        view.notifyError("Error loading task.")
+                    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                view.notifyError("Error loading task.");
-                            }
-
-                            @Override
-                            public void onComplete() {
-                            }
-                        });
+                    override fun onComplete() {}
+                })
     }
 
-    @Override
-    public void getCanAssignToTask(int taskId) {
+    override fun getCanAssignToTask(taskId: Int) {
         taskData.canAssignToTask(taskId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        new Observer<IsUserAssignableToTaskViewModel>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                object : Observer<IsUserAssignableToTaskViewModel> {
+                    override fun onSubscribe(d: Disposable) {}
+                    override fun onNext(canAssignToTask: IsUserAssignableToTaskViewModel) {
+                        view.updateButton(canAssignToTask)
+                    }
 
-                            @Override
-                            public void onNext(IsUserAssignableToTaskViewModel canAssignToTask) {
-                                view.updateButton(canAssignToTask);
-                            }
+                    override fun onError(e: Throwable) {
+                        view.notifyError("Error getting if possible to assign.")
+                    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                view.notifyError("Error getting if possible to assign.");
-                            }
-
-                            @Override
-                            public void onComplete() {
-                            }
-                        });
+                    override fun onComplete() {}
+                })
     }
 
-    @Override
-    public void createTaskRequest(int taskId) {
+    override fun createTaskRequest(taskId: Int) {
         taskRequestData.createTaskRequest(taskId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                new Observer<Boolean>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
+                object : Observer<Boolean> {
+                    override fun onSubscribe(d: Disposable) {}
+                    override fun onNext(result: Boolean) {
+                        view.notifySuccessful("Request has been sent successfully")
                     }
 
-                    @Override
-                    public void onNext(Boolean result) {
-                        view.notifySuccessful("Request has been sent successfully");
+                    override fun onError(e: Throwable) {
+                        view.notifyError("Error ocurred when sending request. Please try again.")
+                        e.printStackTrace()
                     }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        view.notifyError("Error ocurred when sending request. Please try again.");
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
-                });
+                    override fun onComplete() {}
+                })
     }
 
-    @Override
-    public void getLatLng(String location) {
+    override fun getLatLng(location: String) {
         locationData.getLatLng(location)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                new Observer<Location>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
+                object : Observer<Location> {
+                    override fun onSubscribe(d: Disposable) {}
+                    override fun onNext(location: Location) {
+                        view.updateMap(location.lat, location.lng)
                     }
 
-                    @Override
-                    public void onNext(Location location) {
-                        view.updateMap(location.getLat(), location.getLng());
+                    override fun onError(e: Throwable) {
+                        e.printStackTrace()
+                        view.notifyError("Error ocurred when sending request. Please try again.")
                     }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        view.notifyError("Error ocurred when sending request. Please try again.");
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
-                });
+                    override fun onComplete() {}
+                })
     }
 
-    @Override
-    public void declineTaskRequest(int taskRequestId, int taskRequestStatusId) {
+    override fun declineTaskRequest(taskRequestId: Int, taskRequestStatusId: Int) {
         taskRequestData.updateTaskRequest(taskRequestId, taskRequestStatusId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        new Observer<Boolean>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                object : Observer<Boolean> {
+                    override fun onSubscribe(d: Disposable) {}
+                    override fun onNext(taskRequests: Boolean) {}
+                    override fun onError(e: Throwable) {
+                        view.notifyError("Error declining request.")
+                        e.printStackTrace()
+                    }
 
-                            @Override
-                            public void onNext(Boolean taskRequests) {
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                view.notifyError("Error declining request.");
-                                e.printStackTrace();
-                            }
-
-                            @Override
-                            public void onComplete() {
-                            }
-                        });
+                    override fun onComplete() {}
+                })
     }
 
-    @Override
-    public void removeAssignedUser(int taskId) {
+    override fun removeAssignedUser(taskId: Int) {
         taskData.removeAssignedUser(taskId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        new Observer<Boolean>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                object : Observer<Boolean> {
+                    override fun onSubscribe(d: Disposable) {}
+                    override fun onNext(taskRequests: Boolean) {
+                        view.notifySuccessful("Removed task successfully")
+                    }
 
-                            @Override
-                            public void onNext(Boolean taskRequests) {
-                                view.notifySuccessful("Removed task successfully");
-                            }
+                    override fun onError(e: Throwable) {
+                        view.notifyError("Error submiting request.")
+                        e.printStackTrace()
+                    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                view.notifyError("Error submiting request.");
-                                e.printStackTrace();
-                            }
+                    override fun onComplete() {}
+                })
+    }
 
-                            @Override
-                            public void onComplete() {
-                            }
-                        });
+    init {
+        taskRequestData = TaskRequestData(context)
+        taskData = TaskData(context)
+        locationData = LocationData()
     }
 }

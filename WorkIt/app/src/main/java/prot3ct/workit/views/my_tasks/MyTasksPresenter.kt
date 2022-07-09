@@ -1,82 +1,64 @@
-package prot3ct.workit.views.my_tasks;
+package prot3ct.workit.views.my_tasks
 
-import android.content.Context;
+import android.content.Context
+import io.reactivex.Observer
+import prot3ct.workit.data.remote.AuthData
+import prot3ct.workit.data.remote.TaskData
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import prot3ct.workit.view_models.MyTasksListViewModel
+import prot3ct.workit.views.my_tasks.base.MyTasksContract
 
-import java.util.List;
+class MyTasksPresenter(private val view: MyTasksContract.View, context: Context) :
+    MyTasksContract.Presenter {
 
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import prot3ct.workit.data.remote.TaskData;
-import prot3ct.workit.data.remote.AuthData;
-import prot3ct.workit.view_models.MyTasksListViewModel;
-import prot3ct.workit.views.my_tasks.base.MyTasksContract;
+    private val authData: AuthData
+    private val taskData: TaskData
 
-public class MyTasksPresenter implements MyTasksContract.Presenter {
-    private MyTasksContract.View view;
-    private AuthData authData;
-    private TaskData taskData;
-
-    public MyTasksPresenter(MyTasksContract.View view, Context context) {
-        this.view = view;
-        this.authData = new AuthData(context);
-        this.taskData = new TaskData(context);
-    }
-
-    @Override
-    public void getMyTasks() {
-        taskData.getMyTasks()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                new Observer<List<MyTasksListViewModel>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                    }
-
-                    @Override
-                    public void onNext(List<MyTasksListViewModel> tasks) {
-                        view.setupTasksAdapter(tasks);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        view.notifyError("Error ocurred loading tasks.");
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
-                });
-    }
-
-    @Override
-    public void deleteTask(int taskId) {
-        taskData.deleteTask(taskId)
+    override val myTasks: Unit
+        get() {
+            taskData.myTasks
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        new Observer<Boolean>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                            }
+                    object : Observer<List<MyTasksListViewModel>> {
+                        override fun onSubscribe(d: Disposable) {}
+                        override fun onNext(tasks: List<MyTasksListViewModel>) {
+                            view.setupTasksAdapter(tasks)
+                        }
 
-                            @Override
-                            public void onNext(Boolean result) {
-                                view.notifyError("Task deleted successfully.");
-                            }
+                        override fun onError(e: Throwable) {
+                            view.notifyError("Error ocurred loading tasks.")
+                            e.printStackTrace()
+                        }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                view.notifyError("Error ocurred deleting task.");
-                                e.printStackTrace();
-                            }
+                        override fun onComplete() {}
+                    })
+        }
 
-                            @Override
-                            public void onComplete() {
-                            }
-                        });
+    override fun deleteTask(taskId: Int) {
+        taskData.deleteTask(taskId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                object : Observer<Boolean> {
+                    override fun onSubscribe(d: Disposable) {}
+                    override fun onNext(result: Boolean) {
+                        view.notifyError("Task deleted successfully.")
+                    }
+
+                    override fun onError(e: Throwable) {
+                        view.notifyError("Error ocurred deleting task.")
+                        e.printStackTrace()
+                    }
+
+                    override fun onComplete() {}
+                })
+    }
+
+    init {
+        authData = AuthData(context)
+        taskData = TaskData(context)
     }
 }

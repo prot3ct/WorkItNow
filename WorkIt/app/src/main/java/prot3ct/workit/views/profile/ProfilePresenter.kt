@@ -1,82 +1,63 @@
-package prot3ct.workit.views.profile;
+package prot3ct.workit.views.profile
 
-import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
+import android.content.Context
+import io.reactivex.Observer
+import prot3ct.workit.data.remote.DialogData
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import prot3ct.workit.data.remote.UserData
+import prot3ct.workit.view_models.ProfileDetailsViewModel
+import prot3ct.workit.views.profile.base.ProfileContract
 
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import prot3ct.workit.data.remote.DialogData;
-import prot3ct.workit.data.remote.UserData;
-import prot3ct.workit.view_models.ProfileDetailsViewModel;
-import prot3ct.workit.views.profile.base.ProfileContract;
+class ProfilePresenter(private val view: ProfileContract.View, context: Context) :
+    ProfileContract.Presenter {
 
-public class ProfilePresenter implements ProfileContract.Presenter {
-    private ProfileContract.View view;
-    private UserData userData;
-    private DialogData dialogData;
+    private val userData: UserData
+    private val dialogData: DialogData
 
-    public ProfilePresenter(ProfileContract.View view, Context context) {
-        this.view = view;
-        userData = new UserData(context);
-        dialogData = new DialogData(context);
-    }
-
-    @Override
-    public void getProfileDetails(int userId) {
+    override fun getProfileDetails(userId: Int) {
         userData.getProfileDetails(userId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        new Observer<ProfileDetailsViewModel>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                object : Observer<ProfileDetailsViewModel> {
+                    override fun onSubscribe(d: Disposable) {}
+                    override fun onNext(profile: ProfileDetailsViewModel) {
+                        view.updateProfile(profile)
+                    }
 
-                            @Override
-                            public void onNext(ProfileDetailsViewModel profile) {
-                                view.updateProfile(profile);
-                            }
+                    override fun onError(e: Throwable) {
+                        e.printStackTrace()
+                        view.notifyError("Error loading profile.")
+                    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                e.printStackTrace();
-                                view.notifyError("Error loading profile.");
-                            }
-
-                            @Override
-                            public void onComplete() {
-                            }
-                        });
+                    override fun onComplete() {}
+                })
     }
 
-    @Override
-    public void createDialog(int userId) {
+    override fun createDialog(userId: Int) {
         dialogData.createDialog(userId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                new Observer<String>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
+                object : Observer<String> {
+                    override fun onSubscribe(d: Disposable) {}
+                    override fun onNext(id: String) {
+                        view.showChatActivity(id.toInt())
                     }
 
-                    @Override
-                    public void onNext(String id) {
-                        view.showChatActivity(Integer.parseInt(id));
+                    override fun onError(e: Throwable) {
+                        e.printStackTrace()
+                        view.notifyError("Error opening dialog")
                     }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        view.notifyError("Error opening dialog");
-                    }
+                    override fun onComplete() {}
+                })
+    }
 
-                    @Override
-                    public void onComplete() {
-                    }
-                });
-}
+    init {
+        userData = UserData(context)
+        dialogData = DialogData(context)
+    }
 }

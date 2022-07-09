@@ -1,34 +1,29 @@
-package prot3ct.workit.views.task_details;
+package prot3ct.workit.views.task_details
 
-import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import prot3ct.workit.R
+import prot3ct.workit.views.task_details.TaskDetailsFragment
+import prot3ct.workit.views.task_details.TaskDetailsPresenter
+import prot3ct.workit.views.task_details.base.TaskDetailsContract
 
-import androidx.appcompat.app.AppCompatActivity;
+class TaskDetailsActivity : AppCompatActivity() {
 
-import prot3ct.workit.R;
-import prot3ct.workit.views.task_details.base.TaskDetailsContract;
+    private lateinit var presenter: TaskDetailsContract.Presenter
 
-public class TaskDetailsActivity extends AppCompatActivity {
-    private TaskDetailsContract.Presenter presenter;
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_task_details);
-
-        TaskDetailsFragment jobDetailsFragment =
-                (TaskDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_task_details)
+        var jobDetailsFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as TaskDetailsFragment?
         if (jobDetailsFragment == null) {
-            jobDetailsFragment = TaskDetailsFragment.newInstance();
-
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.fragment_container, jobDetailsFragment)
-                    .commit();
+            jobDetailsFragment = TaskDetailsFragment.newInstance()
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragment_container, jobDetailsFragment)
+                .commit()
         }
-
-        this.presenter = new TaskDetailsPresenter(jobDetailsFragment, this);
-        jobDetailsFragment.setPresenter(this.presenter);
+        presenter = TaskDetailsPresenter(jobDetailsFragment, this)
+        jobDetailsFragment!!.setPresenter(presenter)
     }
 }

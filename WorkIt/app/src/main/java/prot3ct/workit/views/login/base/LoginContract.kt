@@ -1,25 +1,19 @@
-package prot3ct.workit.views.login.base;
+package prot3ct.workit.views.login.base
 
-import prot3ct.workit.base.BaseView;
+import prot3ct.workit.base.BaseView
 
-public interface LoginContract {
-    interface View extends BaseView<Presenter> {
-        void showListJobsActivity();
-
-        void showRegisterActivity();
-
-        void notifyError(String errorMessage);
-
-        void showDialogforLoading();
-
-        void dismissDialog();
+interface LoginContract {
+    interface View : BaseView<Presenter> {
+        fun showListJobsActivity()
+        fun showRegisterActivity()
+        fun notifyError(errorMessage: String)
+        fun showDialogforLoading()
+        fun dismissDialog()
     }
 
     interface Presenter {
-        void loginUser(String email, String password);
-
-        void autoLoginUser();
-
-        boolean isUserLoggedIn();
+        fun loginUser(email: String, password: String)
+        fun autoLoginUser()
+        val isUserLoggedIn: Boolean
     }
 }

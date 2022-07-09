@@ -46,7 +46,7 @@ class ListDialogsFragment : Fragment(), ListDialogsContract.View {
         dialog = WorkItProgressDialog(context)
         dialogsToBeAdded = ArrayList()
         dialogsListView = view.findViewById(R.id.dialogsList)
-        val drawer = DrawerUtil(this.activity, toolbar)
+        val drawer = DrawerUtil(requireActivity().parent, toolbar)
         drawer.getDrawer()
         presenter.dialogs
         return view

@@ -1,51 +1,43 @@
-package prot3ct.workit.views.register;
+package prot3ct.workit.views.register
 
-import android.content.Context;
-import android.util.Log;
+import android.content.Context
+import io.reactivex.Observer
+import prot3ct.workit.data.remote.AuthData
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import prot3ct.workit.views.register.base.RegisterContract
 
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import prot3ct.workit.data.remote.AuthData;
-import prot3ct.workit.views.register.base.RegisterContract;
+class RegisterPresenter(private val view: RegisterContract.View, context: Context) :
+    RegisterContract.Presenter {
 
-public class RegisterPresenter implements RegisterContract.Presenter {
-    private RegisterContract.View view;
-    private AuthData authData;
+    private val authData: AuthData
 
-    public RegisterPresenter(RegisterContract.View view, Context context) {
-        this.view = view;
-        authData = new AuthData(context);
-    }
-
-    @Override
-    public void registerUser(String email, String fullName, String password) {
+    override fun registerUser(email: String, fullName: String, password: String) {
         authData.register(email, fullName, password)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                new Observer<Boolean>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        view.showDialogforLoading();
+                object : Observer<Boolean> {
+                    override fun onSubscribe(d: Disposable) {
+                        view.showDialogforLoading()
                     }
 
-                    @Override
-                    public void onNext(Boolean value) {
-                        view.dismissDialog();
-                        view.showLoginActivity();
+                    override fun onNext(value: Boolean) {
+                        view.dismissDialog()
+                        view.showLoginActivity()
                     }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        view.notifyError("Error ocurred when registering. Please try again later.");
-                        view.dismissDialog();
+                    override fun onError(e: Throwable) {
+                        view.notifyError("Error ocurred when registering. Please try again later.")
+                        view.dismissDialog()
                     }
 
-                    @Override
-                    public void onComplete() {
-                    }
-                });
+                    override fun onComplete() {}
+                })
+    }
+
+    init {
+        authData = AuthData(context)
     }
 }

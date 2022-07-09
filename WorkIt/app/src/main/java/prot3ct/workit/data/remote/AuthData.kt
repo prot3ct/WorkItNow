@@ -12,7 +12,7 @@ import prot3ct.workit.view_models.LoginViewModel
 import java.lang.Error
 import java.util.HashMap
 
-class AuthData(private val context: Context) : AuthDataContract {
+class AuthData(context: Context) : AuthDataContract {
     private val httpRequester: OkHttpRequester = OkHttpRequester()
 
     private val hashProvider: HashProvider = HashProvider()
@@ -23,10 +23,10 @@ class AuthData(private val context: Context) : AuthDataContract {
 
     private val userSession: UserSession = UserSession(context)
 
-    override fun login(email: String, password: String): Observable<Boolean> {
+    override fun login(username: String, password: String): Observable<Boolean> {
         val userCredentials: MutableMap<String, String> = HashMap()
         val passHash = hashProvider.hashPassword(password)
-        userCredentials["email"] = email
+        userCredentials["email"] = username
         userCredentials["passHash"] = passHash
         return httpRequester
             .post(apiConstants.loginUrl(), userCredentials)
@@ -86,5 +86,4 @@ class AuthData(private val context: Context) : AuthDataContract {
 
     override val isLoggedIn: Boolean
         get() = userSession.isLoggedIn
-
 }

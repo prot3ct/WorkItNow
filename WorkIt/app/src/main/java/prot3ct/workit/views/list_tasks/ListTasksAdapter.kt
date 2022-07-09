@@ -1,137 +1,113 @@
-package prot3ct.workit.views.list_tasks;
+package prot3ct.workit.views.list_tasks
 
+import android.content.Context
+import prot3ct.workit.view_models.AvailableTasksListViewModel
+import androidx.recyclerview.widget.RecyclerView
+import android.view.ViewGroup
+import android.view.LayoutInflater
+import prot3ct.workit.R
+import android.content.Intent
+import android.view.View
+import prot3ct.workit.views.task_details.TaskDetailsActivity
+import androidx.cardview.widget.CardView
+import android.widget.TextView
+import java.text.DateFormat
+import java.text.DateFormatSymbols
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
 
-import android.content.Context;
-import android.content.Intent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+class ListTasksAdapter internal constructor(
+    var tasks: List<AvailableTasksListViewModel>,
+    val context: Context
+) : RecyclerView.Adapter<ListTasksAdapter.TaskViewHolder>() {
 
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
-
-import java.text.DateFormat;
-import java.text.DateFormatSymbols;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
-import prot3ct.workit.R;
-import prot3ct.workit.view_models.AvailableTasksListViewModel;
-import prot3ct.workit.views.task_details.TaskDetailsActivity;
-
-public class ListTasksAdapter extends RecyclerView.Adapter<ListTasksAdapter.TaskViewHolder> {
-    List<AvailableTasksListViewModel> tasks;
-    List<AvailableTasksListViewModel> allTasks = new ArrayList<AvailableTasksListViewModel>();
-    private Context context;
-
-    ListTasksAdapter(List<AvailableTasksListViewModel> tasks, Context context){
-        this.tasks = tasks;
-        this.allTasks.addAll(tasks);
-        this.context = context;
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): TaskViewHolder {
+        val v = LayoutInflater.from(parent.context)
+            .inflate(R.layout.single_task_list_tasks, parent, false)
+        return TaskViewHolder(v)
     }
 
-    @Override
-    public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_task_list_tasks, parent, false);
-        TaskViewHolder pvh = new TaskViewHolder(v);
-        return pvh;
-    }
-
-    @Override
-    public void onBindViewHolder(TaskViewHolder holder, int position) {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.ENGLISH);
-        Date date = null;
+    override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
+        val format: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.ENGLISH)
+        var date: Date? = null
         try {
-            date = format.parse(tasks.get(position).getStartDate());
-        } catch (ParseException e) {
-            e.printStackTrace();
+            date = format.parse(tasks[position].startDate)
+        } catch (e: ParseException) {
+            e.printStackTrace()
         }
-
-        Date currentDate = Calendar.getInstance().getTime();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        Calendar currentCalendar = Calendar.getInstance();
-        currentCalendar.setTime(currentDate);
-
-        long diffInMillies = Math.abs(currentDate.getTime() - date.getTime());
-        long diffHours = TimeUnit.HOURS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-        long diffMinutes = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS);
-
+        val currentDate = Calendar.getInstance().time
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        val currentCalendar = Calendar.getInstance()
+        currentCalendar.time = currentDate
+        val diffInMillies = Math.abs(currentDate.time - date!!.time)
+        val diffHours = TimeUnit.HOURS.convert(diffInMillies, TimeUnit.MILLISECONDS)
+        val diffMinutes = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS)
         if (diffHours <= 24) {
-            holder.startTime.setText("Today");
-            if (diffHours != 0) {
-                holder.timeLeft.setText(diffHours + " hours left to respond");
+            holder.startTime.text = "Today"
+            if (diffHours != 0L) {
+                holder.timeLeft.text = "$diffHours hours left to respond"
+            } else {
+                holder.timeLeft.text = "$diffMinutes minutes left to respond"
             }
-            else {
-                holder.timeLeft.setText(diffMinutes + " minutes left to respond");
-            }
+        } else {
+            holder.startTime.text =
+                getOrdinal(calendar[Calendar.DAY_OF_MONTH]) + " " + getMonthForInt(
+                    calendar[Calendar.MONTH]
+                )
         }
-        else {
-            holder.startTime.setText(getOrdinal(calendar.get(Calendar.DAY_OF_MONTH)) + " " + getMonthForInt(calendar.get(Calendar.MONTH)));
-        }
-        holder.taskTitle.setText(tasks.get(position).getTitle());
-        holder.taskCreator.setText("for " + tasks.get(position).getFullName());
-        holder.supervisorRating.setText(tasks.get(position).getSupervisorRating()+"");
-        holder.cv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, TaskDetailsActivity.class);
-                intent.putExtra("taskId", tasks.get(holder.getAbsoluteAdapterPosition()).getTaskId());
-                context.startActivity(intent);
-            }
-        });
-    }
-
-    @Override
-    public int getItemCount() {
-        return tasks.size();
-    }
-
-    public static class TaskViewHolder extends RecyclerView.ViewHolder {
-        CardView cv;
-        TextView startTime;
-        TextView timeLeft;
-        TextView taskTitle;
-        TextView taskCreator;
-        TextView supervisorRating;
-
-        TaskViewHolder(View itemView) {
-            super(itemView);
-            cv = itemView.findViewById(R.id.id_single_task_from_list_tasks);
-            startTime = itemView.findViewById(R.id.id_task_start_time);
-            timeLeft = itemView.findViewById(R.id.id_task_time_left);
-            taskTitle = itemView.findViewById(R.id.id_task_title);
-            taskCreator = itemView.findViewById(R.id.id_task_creator);
-            supervisorRating = itemView.findViewById(R.id.id_task_supervisor_rating_text_view);
+        holder.taskTitle.text = tasks[position].title
+        holder.taskCreator.text = "for " + tasks[position].fullName
+        holder.supervisorRating.text = tasks[position].supervisorRating + ""
+        holder.cv.setOnClickListener {
+            val intent = Intent(context, TaskDetailsActivity::class.java)
+            intent.putExtra("taskId", tasks[holder.absoluteAdapterPosition].taskId)
+            context.startActivity(intent)
         }
     }
 
-    private String getMonthForInt(int num) {
-        String month = "wrong";
-        DateFormatSymbols dfs = new DateFormatSymbols();
-        String[] months = dfs.getMonths();
-        if (num >= 0 && num <= 11 ) {
-            month = months[num];
-        }
-        return month;
+    override fun getItemCount(): Int {
+        return tasks.size
     }
 
-    private String getOrdinal(int i) {
-        String[] sufixes = new String[] { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
-        switch (i % 100) {
-            case 11:
-            case 12:
-            case 13:
-                return i + "th";
-            default:
-                return i + sufixes[i % 10];
+    class TaskViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var cv: CardView
+        var startTime: TextView
+        var timeLeft: TextView
+        var taskTitle: TextView
+        var taskCreator: TextView
+        var supervisorRating: TextView
+
+        init {
+            cv = itemView.findViewById(R.id.id_single_task_from_list_tasks)
+            startTime = itemView.findViewById(R.id.id_task_start_time)
+            timeLeft = itemView.findViewById(R.id.id_task_time_left)
+            taskTitle = itemView.findViewById(R.id.id_task_title)
+            taskCreator = itemView.findViewById(R.id.id_task_creator)
+            supervisorRating = itemView.findViewById(R.id.id_task_supervisor_rating_text_view)
+        }
+    }
+
+    private fun getMonthForInt(num: Int): String {
+        var month = "wrong"
+        val dfs = DateFormatSymbols()
+        val months = dfs.months
+        if (num >= 0 && num <= 11) {
+            month = months[num]
+        }
+        return month
+    }
+
+    private fun getOrdinal(i: Int): String {
+        val sufixes = arrayOf("th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th")
+        return when (i % 100) {
+            11, 12, 13 -> i.toString() + "th"
+            else -> i.toString() + sufixes[i % 10]
         }
     }
 }

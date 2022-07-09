@@ -68,7 +68,7 @@ class CreateTaskFragment : Fragment(), CreateTaskContract.View {
         addressTextView = view.findViewById<View>(R.id.id_address_edit_text) as TextView
         rewardTextView = view.findViewById<View>(R.id.id_reward_edit_text) as TextView
         saveTaskButton = view.findViewById<View>(R.id.id_create_task_btn) as Button
-        val drawer = DrawerUtil(this.activity, toolbar)
+        val drawer = DrawerUtil(requireActivity().parent, toolbar)
         drawer.getDrawer()
         startDateTextView.setOnClickListener { showDateTimePicker() }
         saveTaskButton.setOnClickListener {

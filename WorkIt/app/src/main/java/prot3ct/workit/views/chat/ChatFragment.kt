@@ -68,7 +68,7 @@ class ChatFragment : Fragment(), ChatContract.View {
             true
         })
         presenter.getMessages(requireActivity().intent.getIntExtra("dialogId", 0))
-        val drawer = DrawerUtil(this.activity, toolbar)
+        val drawer = DrawerUtil(requireActivity().parent, toolbar)
         drawer.getDrawer()
         return view
     }

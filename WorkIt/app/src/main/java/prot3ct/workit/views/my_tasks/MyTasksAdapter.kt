@@ -1,202 +1,164 @@
-package prot3ct.workit.views.my_tasks;
+package prot3ct.workit.views.my_tasks
 
+import android.app.AlertDialog
+import android.content.Context
+import android.content.DialogInterface
+import prot3ct.workit.view_models.MyTasksListViewModel
+import androidx.recyclerview.widget.RecyclerView
+import android.view.ViewGroup
+import android.view.LayoutInflater
+import prot3ct.workit.R
+import android.content.Intent
+import android.view.View
+import android.widget.Button
+import prot3ct.workit.views.edit_task.EditTaskActivity
+import prot3ct.workit.views.list_task_requests.ListTaskRequestsActivity
+import androidx.cardview.widget.CardView
+import android.widget.TextView
+import prot3ct.workit.views.my_tasks.base.MyTasksContract
+import java.text.DateFormat
+import java.text.DateFormatSymbols
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
+class MyTasksAdapter internal constructor(
+    private val tasks: MutableList<MyTasksListViewModel>,
+    val context: Context,
+    private val myTasksPresenter: MyTasksContract.Presenter
+) : RecyclerView.Adapter<MyTasksAdapter.TaskViewHolder>() {
 
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
+    private val presenter: MyTasksContract.Presenter = myTasksPresenter
+    private val allTasks: MutableList<MyTasksListViewModel> = tasks.toMutableList()
 
-import java.text.DateFormat;
-import java.text.DateFormatSymbols;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
-import prot3ct.workit.R;
-import prot3ct.workit.view_models.AvailableTasksListViewModel;
-import prot3ct.workit.view_models.MyTasksListViewModel;
-import prot3ct.workit.views.edit_task.EditTaskActivity;
-import prot3ct.workit.views.list_task_requests.ListTaskRequestsActivity;
-import prot3ct.workit.views.my_tasks.base.MyTasksContract;
-
-public class MyTasksAdapter extends RecyclerView.Adapter<MyTasksAdapter.TaskViewHolder> {
-    private MyTasksContract.Presenter presenter;
-    private List<MyTasksListViewModel> tasks;
-    private List<MyTasksListViewModel> allTasks = new ArrayList<MyTasksListViewModel>();
-    private Context context;
-
-    MyTasksAdapter(List<MyTasksListViewModel> tasks, Context context, MyTasksContract.Presenter presenter) {
-        this.tasks = tasks;
-        this.allTasks.addAll(tasks);
-        this.context = context;
-        this.presenter = presenter;
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): TaskViewHolder {
+        val v = LayoutInflater.from(parent.context)
+            .inflate(R.layout.single_task_my_tasks, parent, false)
+        return TaskViewHolder(v)
     }
 
-    @Override
-    public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_task_my_tasks, parent, false);
-        TaskViewHolder pvh = new TaskViewHolder(v);
-        return pvh;
-    }
-
-    @Override
-    public void onBindViewHolder(final TaskViewHolder holder, final int position) {
-        if (!tasks.get(position).getHasPendingRequests()) {
-            holder.taskRequestersButton.setVisibility(View.GONE);
+    override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
+        if (!tasks[position].hasPendingRequests) {
+            holder.taskRequestersButton.visibility = View.GONE
         }
-
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.ENGLISH);
-        Date date = null;
+        val format: DateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.ENGLISH)
+        lateinit var date: Date
         try {
-            date = format.parse(tasks.get(position).getStartDate());
-        } catch (ParseException e) {
-            e.printStackTrace();
+            date = format.parse(tasks[position].startDate)
+        } catch (e: ParseException) {
+            e.printStackTrace()
         }
-
-        Date currentDate = Calendar.getInstance().getTime();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        Calendar currentCalendar = Calendar.getInstance();
-        currentCalendar.setTime(currentDate);
-
-        if (currentDate.getDay() == date.getDay()) {
-            holder.startTime.setText("Today");
-            if (date.getHours() != currentDate.getHours()) {
-                if (calendar.get(Calendar.HOUR_OF_DAY) - currentCalendar.get(Calendar.HOUR_OF_DAY) <= 0) {
-                    holder.timeLeft.setText("Expired");
+        val currentDate = Calendar.getInstance().time
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        val currentCalendar = Calendar.getInstance()
+        currentCalendar.time = currentDate
+        if (currentDate.day == date.day) {
+            holder.startTime.text = "Today"
+            if (date.hours != currentDate.hours) {
+                if (calendar[Calendar.HOUR_OF_DAY] - currentCalendar[Calendar.HOUR_OF_DAY] <= 0) {
+                    holder.timeLeft.text = "Expired"
+                } else {
+                    holder.timeLeft.setText((calendar[Calendar.HOUR_OF_DAY] - currentCalendar[Calendar.HOUR_OF_DAY]).toString() + " hours left until start")
                 }
-                else {
-                    holder.timeLeft.setText(calendar.get(Calendar.HOUR_OF_DAY) - currentCalendar.get(Calendar.HOUR_OF_DAY) + " hours left until start");
-                }
+            } else {
+                holder.timeLeft.setText((calendar[Calendar.MINUTE] - currentCalendar[Calendar.MINUTE]).toString() + " minutes left until start")
             }
-            else {
-                holder.timeLeft.setText(calendar.get(Calendar.MINUTE) - currentCalendar.get(Calendar.MINUTE) + " minutes left until start");
-            }
+        } else {
+            holder.startTime.text =
+                getOrdinal(calendar[Calendar.DAY_OF_MONTH]) + " " + getMonthForInt(
+                    calendar[Calendar.MONTH]
+                )
         }
-        else {
-            holder.startTime.setText(getOrdinal(calendar.get(Calendar.DAY_OF_MONTH)) + " " + getMonthForInt(calendar.get(Calendar.MONTH)));
+        holder.taskTitle.text = tasks[position].title
+        holder.taskCreator.text = "for me"
+        holder.editTaskButton.setOnClickListener {
+            val intent = Intent(context, EditTaskActivity::class.java)
+            intent.putExtra("taskId", tasks[holder.absoluteAdapterPosition].taskId)
+            context.startActivity(intent)
         }
-        holder.taskTitle.setText(tasks.get(position).getTitle());
-        holder.taskCreator.setText("for me");
-
-        holder.editTaskButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, EditTaskActivity.class);
-                intent.putExtra("taskId", tasks.get(holder.getAbsoluteAdapterPosition()).getTaskId());
-                context.startActivity(intent);
-            }
-        });
-
-        holder.taskRequestersButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, ListTaskRequestsActivity.class);
-                intent.putExtra("taskId", tasks.get(holder.getAbsoluteAdapterPosition()).getTaskId());
-                context.startActivity(intent);
-            }
-        });
-
-        holder.deleteTaskButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which){
-                            case DialogInterface.BUTTON_POSITIVE:
-                                presenter.deleteTask(tasks.get(holder.getAbsoluteAdapterPosition()).getTaskId());
-                                tasks.remove(holder.getAbsoluteAdapterPosition());
-                                notifyDataSetChanged();
-                                break;
-                        }
+        holder.taskRequestersButton.setOnClickListener {
+            val intent = Intent(context, ListTaskRequestsActivity::class.java)
+            intent.putExtra("taskId", tasks[holder.absoluteAdapterPosition].taskId)
+            context.startActivity(intent)
+        }
+        holder.deleteTaskButton.setOnClickListener {
+            val dialogClickListener = DialogInterface.OnClickListener { dialog, which ->
+                when (which) {
+                    DialogInterface.BUTTON_POSITIVE -> {
+                        presenter.deleteTask(tasks[holder.absoluteAdapterPosition].taskId)
+                        tasks.removeAt(holder.absoluteAdapterPosition)
+                        notifyDataSetChanged()
                     }
-                };
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setMessage("Are you sure you want to delete this task?").setPositiveButton("Yes", dialogClickListener)
-                        .setNegativeButton("No", dialogClickListener).show();
+                }
             }
-        });
-
-    }
-
-    @Override
-    public int getItemCount() {
-        return tasks.size();
-    }
-
-    private String getMonthForInt(int num) {
-        String month = "wrong";
-        DateFormatSymbols dfs = new DateFormatSymbols();
-        String[] months = dfs.getMonths();
-        if (num >= 0 && num <= 11 ) {
-            month = months[num];
-        }
-        return month;
-    }
-
-    private String getOrdinal(int i) {
-        String[] sufixes = new String[] { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
-        switch (i % 100) {
-            case 11:
-            case 12:
-            case 13:
-                return i + "th";
-            default:
-                return i + sufixes[i % 10];
+            val builder = AlertDialog.Builder(context)
+            builder.setMessage("Are you sure you want to delete this task?")
+                .setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show()
         }
     }
 
-    public void filter(String text) {
-        tasks.clear();
-        if(text.isEmpty()) {
-            tasks.addAll(allTasks);
+    override fun getItemCount(): Int {
+        return tasks.size
+    }
+
+    private fun getMonthForInt(num: Int): String {
+        var month = "wrong"
+        val dfs = DateFormatSymbols()
+        val months = dfs.months
+        if (num in 0..11) {
+            month = months[num]
         }
-        else {
-            text = text.toLowerCase();
-            for (MyTasksListViewModel task : allTasks) {
-                if (task.getTitle().toLowerCase().contains(text)) {
-                    tasks.add(task);
+        return month
+    }
+
+    private fun getOrdinal(i: Int): String {
+        val sufixes = arrayOf("th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th")
+        return when (i % 100) {
+            11, 12, 13 -> i.toString() + "th"
+            else -> i.toString() + sufixes[i % 10]
+        }
+    }
+
+    fun filter(text: String) {
+        var text = text
+        tasks.clear()
+        if (text.isEmpty()) {
+            tasks.addAll(allTasks)
+        } else {
+            text = text.lowercase(Locale.getDefault())
+            for (task in allTasks) {
+                if (task.title.lowercase(Locale.getDefault()).contains(text)) {
+                    tasks.add(task)
                 }
             }
         }
-        notifyDataSetChanged();
+        notifyDataSetChanged()
     }
 
+    class TaskViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var cv: CardView
+        var startTime: TextView
+        var timeLeft: TextView
+        var taskTitle: TextView
+        var taskCreator: TextView
+        var editTaskButton: Button
+        var taskRequestersButton: Button
+        var deleteTaskButton: Button
 
-    public static class TaskViewHolder extends RecyclerView.ViewHolder {
-        CardView cv;
-        TextView startTime;
-        TextView timeLeft;
-        TextView taskTitle;
-        TextView taskCreator;
-        Button editTaskButton;
-        Button taskRequestersButton;
-        Button deleteTaskButton;
-
-        TaskViewHolder(View itemView) {
-            super(itemView);
-            cv = itemView.findViewById(R.id.id_single_task_from_my_tasks);
-            startTime = itemView.findViewById(R.id.id_task_start_time);
-            timeLeft = itemView.findViewById(R.id.id_task_time_left);
-            taskTitle = itemView.findViewById(R.id.id_task_title);
-            taskCreator = itemView.findViewById(R.id.id_task_creator);
-            editTaskButton = itemView.findViewById(R.id.id_edit_task_button);
-            taskRequestersButton = itemView.findViewById(R.id.id_task_requests_button);
-            deleteTaskButton = itemView.findViewById(R.id.id_delete_task_button);
+        init {
+            cv = itemView.findViewById(R.id.id_single_task_from_my_tasks)
+            startTime = itemView.findViewById(R.id.id_task_start_time)
+            timeLeft = itemView.findViewById(R.id.id_task_time_left)
+            taskTitle = itemView.findViewById(R.id.id_task_title)
+            taskCreator = itemView.findViewById(R.id.id_task_creator)
+            editTaskButton = itemView.findViewById(R.id.id_edit_task_button)
+            taskRequestersButton = itemView.findViewById(R.id.id_task_requests_button)
+            deleteTaskButton = itemView.findViewById(R.id.id_delete_task_button)
         }
     }
 }

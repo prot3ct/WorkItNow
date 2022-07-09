@@ -1,68 +1,55 @@
-package prot3ct.workit.views.my_tasks;
+package prot3ct.workit.views.my_tasks
 
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.view.Menu
+import prot3ct.workit.R
+import prot3ct.workit.views.navigation.DrawerUtil
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
+import prot3ct.workit.views.my_tasks.base.MyTasksContract
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
+class MyTasksActivity : AppCompatActivity() {
+    private lateinit  var presenter: MyTasksContract.Presenter
+    private var myTasksFragment: MyTasksFragment? = null
 
-import prot3ct.workit.R;
-import prot3ct.workit.views.my_tasks.base.MyTasksContract;
-import prot3ct.workit.views.navigation.DrawerUtil;
-
-public class MyTasksActivity extends AppCompatActivity {
-    private MyTasksContract.Presenter presenter;
-    private MyTasksFragment myTasksFragment;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_tasks);
-        Toolbar toolbar = this.findViewById(R.id.id_drawer_toolbar);
-        setSupportActionBar(toolbar);
-        setTitle("My Tasks");
-        DrawerUtil drawer = new DrawerUtil(this, toolbar);
-        drawer.getDrawer();
-
-        myTasksFragment = (MyTasksFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_my_tasks)
+        val toolbar = findViewById<Toolbar>(R.id.id_drawer_toolbar)
+        setSupportActionBar(toolbar)
+        title = "My Tasks"
+        val drawer = DrawerUtil(this, toolbar)
+        drawer.getDrawer()
+        myTasksFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as MyTasksFragment?
         if (myTasksFragment == null) {
-            myTasksFragment = MyTasksFragment.newInstance();
-
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.fragment_container, myTasksFragment)
-                    .commit();
+            myTasksFragment = MyTasksFragment.newInstance()
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragment_container, myTasksFragment!!)
+                .commit()
         }
-
-        this.presenter = new MyTasksPresenter(myTasksFragment, this);
-        myTasksFragment.setPresenter(this.presenter);
+        presenter = MyTasksPresenter(myTasksFragment!!, this)
+        myTasksFragment!!.setPresenter(presenter)
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_options, menu);
-
-        MenuItem ourSearchItem = menu.findItem(R.id.menu_search);
-
-        SearchView sv = (SearchView) ourSearchItem.getActionView();
-        sv.setQueryHint("Search by title");
-        sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return true;
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_options, menu)
+        val ourSearchItem = menu.findItem(R.id.menu_search)
+        val sv = ourSearchItem.actionView as SearchView?
+        sv!!.queryHint = "Search by title"
+        sv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return true
             }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                myTasksFragment.filterTask(newText);
-                return true;
+            override fun onQueryTextChange(newText: String): Boolean {
+                myTasksFragment!!.filterTask(newText)
+                return true
             }
-        });
-        return true;
+        })
+        return true
     }
 }

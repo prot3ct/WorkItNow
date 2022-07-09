@@ -1,26 +1,20 @@
-package prot3ct.workit.views.profile.base;
+package prot3ct.workit.views.profile.base
 
-import prot3ct.workit.base.BaseView;
-import prot3ct.workit.view_models.ProfileDetailsViewModel;
+import prot3ct.workit.base.BaseView
+import prot3ct.workit.view_models.ProfileDetailsViewModel
 
-public interface ProfileContract {
-    interface View extends BaseView<Presenter> {
-        void notifyError(String errorMessage);
-
-        void updateProfile(ProfileDetailsViewModel profileDetails);
-
-        void showEditProfileActivity();
-
-        void showDialogforLoading();
-
-        void showChatActivity(int dialogId);
-
-        void dismissDialog();
+interface ProfileContract {
+    interface View : BaseView<Presenter> {
+        fun notifyError(errorMessage: String)
+        fun updateProfile(profileDetails: ProfileDetailsViewModel)
+        fun showEditProfileActivity()
+        fun showDialogforLoading()
+        fun showChatActivity(dialogId: Int)
+        fun dismissDialog()
     }
 
     interface Presenter {
-        void getProfileDetails(int userId);
-
-        void createDialog(int userId);
+        fun getProfileDetails(userId: Int)
+        fun createDialog(userId: Int)
     }
 }

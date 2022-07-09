@@ -1,33 +1,28 @@
-package prot3ct.workit.views.login;
+package prot3ct.workit.views.login
 
-import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import prot3ct.workit.R
+import prot3ct.workit.views.login.LoginFragment
+import prot3ct.workit.views.login.LoginPresenter
+import prot3ct.workit.views.login.base.LoginContract
 
-import androidx.appcompat.app.AppCompatActivity;
+class LoginActivity : AppCompatActivity() {
+    private lateinit var presenter: LoginContract.Presenter
 
-import prot3ct.workit.R;
-import prot3ct.workit.views.login.base.LoginContract;
-
-public class LoginActivity extends AppCompatActivity {
-    private LoginContract.Presenter presenter;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_tasks);
-
-        LoginFragment loginFragment =
-                (LoginFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_list_tasks)
+        var loginFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as LoginFragment?
         if (loginFragment == null) {
-            loginFragment = LoginFragment.newInstance();
-
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.fragment_container, loginFragment)
-                    .commit();
+            loginFragment = LoginFragment.newInstance()
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragment_container, loginFragment)
+                .commit()
         }
-
-        this.presenter = new LoginPresenter(loginFragment, this);
-        loginFragment.setPresenter(this.presenter);
+        presenter = LoginPresenter(loginFragment, this)
+        loginFragment!!.setPresenter(presenter)
     }
 }

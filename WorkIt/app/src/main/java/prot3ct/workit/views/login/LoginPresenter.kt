@@ -1,84 +1,66 @@
-package prot3ct.workit.views.login;
+package prot3ct.workit.views.login
 
-import android.content.Context;
+import android.content.Context
+import io.reactivex.Observer
+import prot3ct.workit.data.remote.AuthData
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import prot3ct.workit.views.login.base.LoginContract
 
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import prot3ct.workit.data.remote.AuthData;
-import prot3ct.workit.views.login.base.LoginContract;
+class LoginPresenter(private val view: LoginContract.View, context: Context) :
+    LoginContract.Presenter {
+    private val authData: AuthData
 
-public class LoginPresenter implements LoginContract.Presenter {
-    private LoginContract.View view;
-    private AuthData authData;
+    override val isUserLoggedIn: Boolean
+        get() = authData.isLoggedIn
 
-    public LoginPresenter(LoginContract.View view, Context context) {
-        this.view = view;
-        authData = new AuthData(context);
-    }
-
-    @Override
-    public void loginUser(String email, String password) {
+    override fun loginUser(email: String, password: String) {
         authData.login(email, password)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                new Observer<Boolean>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        view.showDialogforLoading();
+                object : Observer<Boolean> {
+                    override fun onSubscribe(d: Disposable) {
+                        view.showDialogforLoading()
                     }
 
-                    @Override
-                    public void onNext(Boolean value) {
-                        view.dismissDialog();
-                        view.showListJobsActivity();
+                    override fun onNext(value: Boolean) {
+                        view.dismissDialog()
+                        view.showListJobsActivity()
                     }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        view.notifyError("Error ocurred when logining in. Please try again.");
-                        view.dismissDialog();
+                    override fun onError(e: Throwable) {
+                        view.notifyError("Error ocurred when logining in. Please try again.")
+                        view.dismissDialog()
                     }
 
-                    @Override
-                    public void onComplete() {
-                    }
-                });
+                    override fun onComplete() {}
+                })
     }
 
-    @Override
-    public boolean isUserLoggedIn() {
-        return this.authData.isLoggedIn();
-    }
-
-    @Override
-    public void autoLoginUser() {
+    override fun autoLoginUser() {
         authData.autoLogin()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        new Observer<Boolean>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                object : Observer<Boolean> {
+                    override fun onSubscribe(d: Disposable) {}
+                    override fun onNext(value: Boolean) {
+                        if (value) {
+                            view.showListJobsActivity()
+                        }
+                    }
 
-                            @Override
-                            public void onNext(Boolean value) {
-                                if (value) {
-                                    view.showListJobsActivity();
-                                }
-                            }
+                    override fun onError(e: Throwable) {
+                        view.notifyError("Error auto logining in.")
+                    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                view.notifyError("Error auto logining in.");
-                            }
+                    override fun onComplete() {}
+                })
+    }
 
-                            @Override
-                            public void onComplete() {
-                            }
-                        });
+    init {
+        authData = AuthData(context)
     }
 }

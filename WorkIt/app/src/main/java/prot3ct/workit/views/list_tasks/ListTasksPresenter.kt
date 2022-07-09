@@ -1,84 +1,64 @@
-package prot3ct.workit.views.list_tasks;
+package prot3ct.workit.views.list_tasks
 
-import android.content.Context;
-import android.util.Log;
+import android.content.Context
+import android.util.Log
+import io.reactivex.Observer
+import prot3ct.workit.data.remote.AuthData
+import prot3ct.workit.data.remote.TaskData
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import prot3ct.workit.view_models.AvailableTasksListViewModel
+import prot3ct.workit.views.list_tasks.base.ListTasksContract
 
-import java.util.List;
+class ListTasksPresenter(private val view: ListTasksContract.View, context: Context) :
+    ListTasksContract.Presenter {
+    private val authData: AuthData
+    private val taskData: TaskData
 
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import prot3ct.workit.data.remote.TaskData;
-import prot3ct.workit.data.remote.AuthData;
-import prot3ct.workit.view_models.AvailableTasksListViewModel;
-import prot3ct.workit.views.list_tasks.base.ListTasksContract;
-
-public class ListTasksPresenter implements ListTasksContract.Presenter {
-    private ListTasksContract.View view;
-    private AuthData authData;
-    private TaskData taskData;
-
-    public ListTasksPresenter(ListTasksContract.View view, Context context) {
-        this.view = view;
-        this.authData = new AuthData(context);
-        this.taskData = new TaskData(context);
-    }
-
-    @Override
-    public void getAllTasks(int page) {
+    override fun getAllTasks(page: Int) {
         taskData.getAvailableTasks(page, "")
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                new Observer<List<AvailableTasksListViewModel>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
+                object : Observer<List<AvailableTasksListViewModel>> {
+                    override fun onSubscribe(d: Disposable) {}
+                    override fun onNext(tasks: List<AvailableTasksListViewModel>) {
+                        view.updateTasks(tasks)
                     }
 
-                    @Override
-                    public void onNext(List<AvailableTasksListViewModel> tasks) {
-                        view.updateTasks(tasks);
+                    override fun onError(e: Throwable) {
+                        e.printStackTrace()
+                        view.notifyError("Error ocurred retrieving data.")
+                        Log.d("CEKO13", "asdasd")
                     }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        view.notifyError("Error ocurred retrieving data.");
-                        Log.d("CEKO13", "asdasd");
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
-                });
+                    override fun onComplete() {}
+                })
     }
 
-    @Override
-    public void getSearchedAvailableTasks(int page, String search) {
+    override fun getSearchedAvailableTasks(page: Int, search: String) {
         taskData.getAvailableTasks(page, search)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        new Observer<List<AvailableTasksListViewModel>>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                object : Observer<List<AvailableTasksListViewModel>> {
+                    override fun onSubscribe(d: Disposable) {}
+                    override fun onNext(tasks: List<AvailableTasksListViewModel>) {
+                        Log.d("TASKS1", tasks.size.toString() + "")
+                        view.updateTasks(tasks)
+                    }
 
-                            @Override
-                            public void onNext(List<AvailableTasksListViewModel> tasks) {
-                                Log.d("TASKS1", tasks.size()+"");
-                                view.updateTasks(tasks);
-                            }
+                    override fun onError(e: Throwable) {
+                        view.notifyError("Error ocurred retrieving data.")
+                    }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                view.notifyError("Error ocurred retrieving data.");
-                            }
+                    override fun onComplete() {}
+                })
+    }
 
-                            @Override
-                            public void onComplete() {
-                            }
-                        });
+    init {
+        authData = AuthData(context)
+        taskData = TaskData(context)
     }
 }

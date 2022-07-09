@@ -1,37 +1,26 @@
-package prot3ct.workit.views.task_details.base;
+package prot3ct.workit.views.task_details.base
 
-import prot3ct.workit.base.BaseView;
-import prot3ct.workit.view_models.IsUserAssignableToTaskViewModel;
-import prot3ct.workit.view_models.TaskDetailViewModel;
+import prot3ct.workit.base.BaseView
+import prot3ct.workit.view_models.TaskDetailViewModel
+import prot3ct.workit.view_models.IsUserAssignableToTaskViewModel
 
-public interface TaskDetailsContract {
-    interface View extends BaseView<Presenter> {
-        void updateTask(TaskDetailViewModel taskDetails);
-
-        void notifySuccessful(String message);
-
-        void notifyError(String errorMessage);
-
-        void updateButton(IsUserAssignableToTaskViewModel canAssignToTask);
-
-        void showDialogforLoading();
-
-        void updateMap(double lat, double lng);
-
-        void dismissDialog();
+interface TaskDetailsContract {
+    interface View : BaseView<Presenter> {
+        fun updateTask(taskDetails: TaskDetailViewModel)
+        fun notifySuccessful(message: String)
+        fun notifyError(errorMessage: String)
+        fun updateButton(canAssignToTask: IsUserAssignableToTaskViewModel)
+        fun showDialogforLoading()
+        fun updateMap(lat: Double, lng: Double)
+        fun dismissDialog()
     }
 
     interface Presenter {
-        void getTaskDetails(int taskId);
-
-        void getCanAssignToTask(int taskId);
-
-        void createTaskRequest(int taskId);
-
-        void getLatLng(String location);
-
-        void declineTaskRequest(int taskRequestId, int taskRequestStatusId);
-
-        void removeAssignedUser(int taskId);
+        fun getTaskDetails(taskId: Int)
+        fun getCanAssignToTask(taskId: Int)
+        fun createTaskRequest(taskId: Int)
+        fun getLatLng(location: String)
+        fun declineTaskRequest(taskRequestId: Int, taskRequestStatusId: Int)
+        fun removeAssignedUser(taskId: Int)
     }
 }

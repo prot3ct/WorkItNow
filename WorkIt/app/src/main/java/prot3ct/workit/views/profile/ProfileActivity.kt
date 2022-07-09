@@ -1,33 +1,29 @@
-package prot3ct.workit.views.profile;
+package prot3ct.workit.views.profile
 
-import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import prot3ct.workit.R
+import prot3ct.workit.views.profile.ProfileFragment
+import prot3ct.workit.views.profile.ProfilePresenter
+import prot3ct.workit.views.profile.base.ProfileContract
 
-import androidx.appcompat.app.AppCompatActivity;
+class ProfileActivity : AppCompatActivity() {
 
-import prot3ct.workit.R;
-import prot3ct.workit.views.profile.base.ProfileContract;
+    private lateinit var presenter: ProfileContract.Presenter
 
-public class ProfileActivity extends AppCompatActivity {
-    private ProfileContract.Presenter presenter;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
-
-        ProfileFragment profileFragment =
-                (ProfileFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_profile)
+        var profileFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as ProfileFragment?
         if (profileFragment == null) {
-            profileFragment = ProfileFragment.newInstance();
-
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.fragment_container, profileFragment)
-                    .commit();
+            profileFragment = ProfileFragment.newInstance()
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragment_container, profileFragment)
+                .commit()
         }
-
-        this.presenter = new ProfilePresenter(profileFragment, this);
-        profileFragment.setPresenter(this.presenter);
+        presenter = ProfilePresenter(profileFragment, this)
+        profileFragment!!.setPresenter(presenter)
     }
 }
