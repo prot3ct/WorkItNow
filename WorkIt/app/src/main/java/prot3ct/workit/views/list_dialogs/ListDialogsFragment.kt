@@ -1,5 +1,6 @@
 package prot3ct.workit.views.list_dialogs
 
+import android.content.Context
 import prot3ct.workit.utils.WorkItProgressDialog
 import com.stfalcon.chatkit.dialogs.DialogsList
 import android.view.LayoutInflater
@@ -27,11 +28,18 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ListDialogsFragment : Fragment(), ListDialogsContract.View {
+
     private lateinit var presenter: ListDialogsContract.Presenter
-    private var dialog: WorkItProgressDialog = WorkItProgressDialog(context)
+    private lateinit var dialog: WorkItProgressDialog
     private lateinit var toolbar: Toolbar
     private lateinit var dialogsListView: DialogsList
     private lateinit var dialogsToBeAdded: ArrayList<Dialog>
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        dialog = WorkItProgressDialog(context)
+    }
 
     override fun setPresenter(presenter: ListDialogsContract.Presenter) {
         this.presenter = presenter
@@ -43,10 +51,10 @@ class ListDialogsFragment : Fragment(), ListDialogsContract.View {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_list_dialogs, container, false)
         toolbar = view.findViewById(R.id.id_drawer_toolbar)
-        dialog = WorkItProgressDialog(context)
+        dialog = WorkItProgressDialog(requireContext())
         dialogsToBeAdded = ArrayList()
         dialogsListView = view.findViewById(R.id.dialogsList)
-        val drawer = DrawerUtil(requireActivity().parent, toolbar)
+        val drawer = DrawerUtil(requireActivity(), toolbar)
         drawer.getDrawer()
         presenter.dialogs
         return view

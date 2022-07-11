@@ -1,5 +1,6 @@
 package prot3ct.workit.views.chat
 
+import android.content.Context
 import com.stfalcon.chatkit.messages.MessagesListAdapter
 import com.stfalcon.chatkit.messages.MessageInput
 import com.stfalcon.chatkit.messages.MessagesList
@@ -31,13 +32,19 @@ class ChatFragment : Fragment(), ChatContract.View {
     private lateinit var adapter: MessagesListAdapter<Message>
     private lateinit var messageInput: MessageInput
     private lateinit var messagesList: MessagesList
-    private val dialog: WorkItProgressDialog = WorkItProgressDialog(context)
+    private lateinit var dialog: WorkItProgressDialog
     private lateinit var toolbar: Toolbar
     private val messagesToBeAdded: MutableList<Message> = ArrayList()
     private lateinit var loggedInUserName: String
 
     override fun setPresenter(presenter: ChatContract.Presenter) {
         this.presenter = presenter
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        dialog = WorkItProgressDialog(context)
     }
 
     override fun onCreateView(
@@ -68,7 +75,7 @@ class ChatFragment : Fragment(), ChatContract.View {
             true
         })
         presenter.getMessages(requireActivity().intent.getIntExtra("dialogId", 0))
-        val drawer = DrawerUtil(requireActivity().parent, toolbar)
+        val drawer = DrawerUtil(requireActivity(), toolbar)
         drawer.getDrawer()
         return view
     }

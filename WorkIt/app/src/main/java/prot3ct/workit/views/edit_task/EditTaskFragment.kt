@@ -12,6 +12,7 @@ import prot3ct.workit.view_models.TaskDetailViewModel
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
+import android.content.Context
 import android.view.View
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
@@ -33,7 +34,13 @@ class EditTaskFragment : Fragment(), EditTaskContract.View {
     private lateinit var toolbar: Toolbar
     private lateinit var saveTaskButton: Button
     private lateinit var date: Calendar
-    private var dialog: WorkItProgressDialog = WorkItProgressDialog(context)
+    private lateinit var dialog: WorkItProgressDialog
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        dialog = WorkItProgressDialog(context)
+    }
 
     override fun setPresenter(presenter: EditTaskContract.Presenter) {
         this.presenter = presenter
@@ -45,7 +52,7 @@ class EditTaskFragment : Fragment(), EditTaskContract.View {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_edit_task, container, false)
         toolbar = view.findViewById(R.id.id_drawer_toolbar)
-        dialog = WorkItProgressDialog(context)
+        dialog = WorkItProgressDialog(requireContext())
         titleTextView = view.findViewById<View>(R.id.id_title_edit_text) as TextView
         startDateTextView = view.findViewById<View>(R.id.id_choose_start_date_text_view) as TextView
         lengthEditText = view.findViewById<View>(R.id.id_length_edit_text) as EditText
@@ -54,7 +61,7 @@ class EditTaskFragment : Fragment(), EditTaskContract.View {
         addressTextView = view.findViewById<View>(R.id.id_address_edit_text) as TextView
         rewardTextView = view.findViewById<View>(R.id.id_reward_edit_text) as TextView
         saveTaskButton = view.findViewById<View>(R.id.id_create_task_btn) as Button
-        val drawer = DrawerUtil(requireActivity().parent, toolbar)
+        val drawer = DrawerUtil(requireActivity(), toolbar)
         drawer.getDrawer()
         taskId = requireActivity().intent.getIntExtra("taskId", 0)
         presenter.getTaskDetails(taskId)

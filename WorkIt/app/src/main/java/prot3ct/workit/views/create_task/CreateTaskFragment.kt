@@ -12,6 +12,7 @@ import prot3ct.workit.views.list_tasks.ListTasksActivity
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
+import android.content.Context
 import android.view.View
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
@@ -42,10 +43,16 @@ class CreateTaskFragment : Fragment(), CreateTaskContract.View {
     private lateinit var  saveTaskButton: Button
     private lateinit var startDateString: String
     private lateinit var  date: Calendar
-    private val dialog: WorkItProgressDialog = WorkItProgressDialog(context)
+    private lateinit var dialog: WorkItProgressDialog
 
     override fun setPresenter(presenter: CreateTaskContract.Presenter) {
         this.presenter = presenter
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        dialog = WorkItProgressDialog(context)
     }
 
     override fun onCreateView(
@@ -68,7 +75,7 @@ class CreateTaskFragment : Fragment(), CreateTaskContract.View {
         addressTextView = view.findViewById<View>(R.id.id_address_edit_text) as TextView
         rewardTextView = view.findViewById<View>(R.id.id_reward_edit_text) as TextView
         saveTaskButton = view.findViewById<View>(R.id.id_create_task_btn) as Button
-        val drawer = DrawerUtil(requireActivity().parent, toolbar)
+        val drawer = DrawerUtil(requireActivity(), toolbar)
         drawer.getDrawer()
         startDateTextView.setOnClickListener { showDateTimePicker() }
         saveTaskButton.setOnClickListener {

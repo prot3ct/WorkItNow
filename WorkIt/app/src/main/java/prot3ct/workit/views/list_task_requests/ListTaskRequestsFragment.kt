@@ -37,7 +37,7 @@ class ListTaskRequestsFragment : Fragment(), ListTaskRequestContract.View {
         recyclerTaskRequestView = view.findViewById(R.id.id_list_task_requests_list_view)
         val llm = LinearLayoutManager(context)
         recyclerTaskRequestView.layoutManager = llm
-        val drawer = DrawerUtil(requireActivity().parent, toolbar)
+        val drawer = DrawerUtil(requireActivity(), toolbar)
         drawer.getDrawer()
         presenter.getTaskRequests(taskId)
         return view

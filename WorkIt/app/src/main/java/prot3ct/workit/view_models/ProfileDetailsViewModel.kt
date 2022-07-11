@@ -9,5 +9,5 @@ class ProfileDetailsViewModel (
     val ratingAsSupervisor: Int,
     val numberOfReviewsAsTasker: Int,
     val getNumberOfReviewsAsSupervisor: Int,
-    val pictureAsString: String,
+    val pictureAsString: String?,
 )

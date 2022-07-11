@@ -33,7 +33,13 @@ class EditProfileFragment : Fragment(), EditProfileContract.View {
     private lateinit var  profilePicture: ImageView
     private lateinit var  updateProfileButton: Button
     private var profilePictureAsString: String? = null
-    private val dialog: WorkItProgressDialog = WorkItProgressDialog(context)
+    private lateinit var dialog: WorkItProgressDialog
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        dialog = WorkItProgressDialog(context)
+    }
 
     override fun setPresenter(presenter: EditProfileContract.Presenter) {
         this.presenter = presenter
@@ -50,7 +56,7 @@ class EditProfileFragment : Fragment(), EditProfileContract.View {
         emailEditText = view.findViewById(R.id.id_edit_profile_email_edit_text)
         phoneEditText = view.findViewById(R.id.id_edit_profile_phone_edit_text)
         toolbar = view.findViewById(R.id.id_drawer_toolbar)
-        val drawer = DrawerUtil(requireActivity().parent, toolbar)
+        val drawer = DrawerUtil(requireActivity(), toolbar)
         drawer.getDrawer()
         profilePicture.setOnClickListener(View.OnClickListener {
             val pickPhoto = Intent(

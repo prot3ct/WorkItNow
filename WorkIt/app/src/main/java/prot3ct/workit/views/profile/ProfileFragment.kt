@@ -37,7 +37,13 @@ class ProfileFragment : Fragment(), ProfileContract.View {
     private lateinit var editProfileButton: FloatingActionButton
     private lateinit var sendMessageButton: FloatingActionButton
     private lateinit var profilePicture: ImageView
-    private val dialog: WorkItProgressDialog = WorkItProgressDialog(context)
+    private lateinit var dialog: WorkItProgressDialog
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        dialog = WorkItProgressDialog(context)
+    }
 
     override fun setPresenter(presenter: ProfileContract.Presenter) {
         this.presenter = presenter

@@ -1,5 +1,6 @@
 package prot3ct.workit.views.register
 
+import android.content.Context
 import android.widget.EditText
 import prot3ct.workit.utils.WorkItProgressDialog
 import android.view.LayoutInflater
@@ -24,7 +25,13 @@ class RegisterFragment : Fragment(), RegisterContract.View {
     private lateinit var confirmPasswordEditText: EditText
     private lateinit var registerButton: Button
     private lateinit var returnToLoginButton: Button
-    private val dialog: WorkItProgressDialog = WorkItProgressDialog(context)
+    private lateinit var dialog: WorkItProgressDialog
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        dialog = WorkItProgressDialog(context)
+    }
 
     override fun setPresenter(presenter: RegisterContract.Presenter) {
         this.presenter = presenter

@@ -12,12 +12,13 @@ import android.view.MenuInflater
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import prot3ct.workit.views.completed_tasks.base.CompletedTasksContract
+import prot3ct.workit.views.create_task.CreateTaskFragment
 
 class CompletedTasksActivity : AppCompatActivity(), RatingDialogListener {
 
     private lateinit var presenter: CompletedTasksContract.Presenter
 
-    private lateinit var completedTasksFragment: CompletedTasksFragment
+    private var completedTasksFragment: CompletedTasksFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,9 +29,18 @@ class CompletedTasksActivity : AppCompatActivity(), RatingDialogListener {
         val drawer = DrawerUtil(this, toolbar)
         drawer.getDrawer()
         completedTasksFragment =
-            supportFragmentManager.findFragmentById(R.id.fragment_container) as CompletedTasksFragment
-        presenter = CompletedTasksPresenter(completedTasksFragment, this)
-        completedTasksFragment.setPresenter(presenter)
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as CompletedTasksFragment?
+
+        if (completedTasksFragment == null) {
+            completedTasksFragment = CompletedTasksFragment.newInstance()
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragment_container, completedTasksFragment!!)
+                .commit()
+        }
+
+        presenter = CompletedTasksPresenter(completedTasksFragment!!, this)
+        completedTasksFragment!!.setPresenter(presenter)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -45,7 +55,7 @@ class CompletedTasksActivity : AppCompatActivity(), RatingDialogListener {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                completedTasksFragment.filterTask(newText)
+                completedTasksFragment!!.filterTask(newText)
                 return true
             }
         })
@@ -53,7 +63,7 @@ class CompletedTasksActivity : AppCompatActivity(), RatingDialogListener {
     }
 
     override fun onPositiveButtonClicked(value: Int, description: String) {
-        completedTasksFragment.postRaiting(value, description)
+        completedTasksFragment!!.postRaiting(value, description)
     }
 
     override fun onNegativeButtonClicked() {}

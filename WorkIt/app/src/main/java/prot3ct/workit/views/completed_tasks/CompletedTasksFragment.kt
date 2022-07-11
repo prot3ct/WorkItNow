@@ -25,8 +25,14 @@ class CompletedTasksFragment : Fragment(), CompletedTasksContract.View {
     private var selectedTaskId by Delegates.notNull<Int>()
     private var userToBeRatedId by Delegates.notNull<Int>()
     private var receiverUserRoleId by Delegates.notNull<Int>()
-    private val dialog: WorkItProgressDialog = WorkItProgressDialog(context)
+    private lateinit var dialog: WorkItProgressDialog
     private lateinit var recyclerTaskView: RecyclerView
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        dialog = WorkItProgressDialog(context)
+    }
 
     override fun setPresenter(presenter: CompletedTasksContract.Presenter) {
         this.presenter = presenter

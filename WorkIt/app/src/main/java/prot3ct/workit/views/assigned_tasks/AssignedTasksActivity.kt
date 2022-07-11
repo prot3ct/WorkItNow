@@ -11,10 +11,12 @@ import prot3ct.workit.views.assigned_tasks.AssignedTasksPresenter
 import android.view.MenuInflater
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import prot3ct.workit.views.chat.ChatFragment
 
 class AssignedTasksActivity : AppCompatActivity() {
+
     private lateinit var presenter: AssignedTasksContract.Presenter
-    private lateinit var assignedTasksFragment: AssignedTasksFragment
+    private var assignedTasksFragment: AssignedTasksFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,9 +27,18 @@ class AssignedTasksActivity : AppCompatActivity() {
         val drawer = DrawerUtil(this, toolbar)
         drawer.getDrawer()
         assignedTasksFragment =
-            supportFragmentManager.findFragmentById(R.id.fragment_container) as AssignedTasksFragment
-        presenter = AssignedTasksPresenter(assignedTasksFragment, this)
-        assignedTasksFragment.setPresenter(presenter)
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as AssignedTasksFragment?
+
+        if (assignedTasksFragment == null) {
+            assignedTasksFragment = AssignedTasksFragment.newInstance()
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragment_container, assignedTasksFragment!!)
+                .commit()
+        }
+
+        presenter = AssignedTasksPresenter(assignedTasksFragment!!, this)
+        assignedTasksFragment!!.setPresenter(presenter)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -42,7 +53,7 @@ class AssignedTasksActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                assignedTasksFragment.filterTask(newText)
+                assignedTasksFragment!!.filterTask(newText)
                 return true
             }
         })

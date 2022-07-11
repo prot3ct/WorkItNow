@@ -1,5 +1,6 @@
 package prot3ct.workit.views.task_details
 
+import android.content.Context
 import com.google.android.gms.maps.OnMapReadyCallback
 import prot3ct.workit.view_models.TaskDetailViewModel
 import com.google.android.gms.maps.GoogleMap
@@ -45,7 +46,13 @@ class TaskDetailsFragment : Fragment(), TaskDetailsContract.View, OnMapReadyCall
     private lateinit var supervisorRating: TextView
     private lateinit var toolbar: Toolbar
     private lateinit var applyForTask: Button
-    private val dialog: WorkItProgressDialog = WorkItProgressDialog(context)
+    private lateinit var dialog: WorkItProgressDialog
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        dialog = WorkItProgressDialog(context)
+    }
 
     override fun setPresenter(presenter: TaskDetailsContract.Presenter) {
         this.presenter = presenter
