@@ -12,7 +12,7 @@ class Message @JvmOverloads constructor(
     private var createdAt: Date = Date()
 ) : IMessage, MessageContentType.Image,
     MessageContentType /*and this one is for custom content type (in this case - voice message)*/ {
-    private lateinit var image: Image
+    private  var image: Image? = null
     lateinit var voice: Voice
     override fun getId(): String {
         return id
@@ -30,8 +30,8 @@ class Message @JvmOverloads constructor(
         return user
     }
 
-    override fun getImageUrl(): String {
-        return image.url
+    override fun getImageUrl(): String? {
+        return image?.url
     }
 
     val status: String

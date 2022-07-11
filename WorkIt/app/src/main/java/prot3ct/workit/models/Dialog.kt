@@ -6,7 +6,7 @@ import java.util.ArrayList
 class Dialog(
     private val id: String,
     private val dialogName: String,
-    private val dialogPhoto: String,
+    private val dialogPhoto: String?,
     private val users: ArrayList<User>,
     private var lastMessage: Message,
     private var unreadCount: Int
@@ -15,7 +15,7 @@ class Dialog(
         return id
     }
 
-    override fun getDialogPhoto(): String {
+    override fun getDialogPhoto(): String? {
         return dialogPhoto
     }
 
