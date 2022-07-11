@@ -47,7 +47,7 @@ class CompletedTasksFragment : Fragment(), CompletedTasksContract.View {
         val llm = LinearLayoutManager(context)
         recyclerTaskView.layoutManager = llm
         presenter.completedTasks
-        loggedInUserId = presenter!!.loggedInUserId
+        loggedInUserId = presenter.loggedInUserId
         return view
     }
 
