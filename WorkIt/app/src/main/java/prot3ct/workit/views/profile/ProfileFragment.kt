@@ -1,26 +1,27 @@
 package prot3ct.workit.views.profile
 
 import android.content.Context
-import android.widget.TextView
-import prot3ct.workit.utils.WorkItProgressDialog
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import android.os.Bundle
-import prot3ct.workit.R
-import prot3ct.workit.views.navigation.DrawerUtil
-import prot3ct.workit.view_models.ProfileDetailsViewModel
-import android.graphics.BitmapFactory
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.os.Bundle
 import android.util.Base64
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
-import prot3ct.workit.views.edit_profile.EditProfileActivity
-import prot3ct.workit.views.chat.ChatActivity
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import prot3ct.workit.R
+import prot3ct.workit.utils.WorkItProgressDialog
+import prot3ct.workit.view_models.ProfileDetailsViewModel
+import prot3ct.workit.views.chat.ChatActivity
+import prot3ct.workit.views.edit_profile.EditProfileActivity
+import prot3ct.workit.views.navigation.DrawerUtil
 import prot3ct.workit.views.profile.base.ProfileContract
+
 
 class ProfileFragment : Fragment(), ProfileContract.View {
 
@@ -99,9 +100,14 @@ class ProfileFragment : Fragment(), ProfileContract.View {
             profileDetails.ratingAsSupervisor.toString() + " out of 5.0"
         numberOfReviewsAsSupervisorTextView.text =
             profileDetails.getNumberOfReviewsAsSupervisor.toString() + " reviews"
-        val decodedString = Base64.decode(profileDetails.pictureAsString, Base64.DEFAULT)
-        val bmp = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-        profilePicture.setImageBitmap(bmp)
+
+        if (profileDetails.pictureAsString != null) {
+            val decodedString: ByteArray =
+                Base64.decode(profileDetails.pictureAsString, Base64.DEFAULT)
+            val bmp = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+            profilePicture.setImageBitmap(bmp)
+        }
+
     }
 
     override fun showEditProfileActivity() {

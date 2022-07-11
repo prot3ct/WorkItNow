@@ -15,6 +15,7 @@ import prot3ct.workit.views.profile.ProfileActivity
 import android.widget.Toast
 import android.app.Activity
 import android.content.Context
+import android.graphics.Bitmap
 import android.provider.MediaStore
 import android.util.Base64
 import android.view.View
@@ -23,6 +24,8 @@ import android.widget.ImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import prot3ct.workit.views.edit_profile.base.EditProfileContract
+import java.io.ByteArrayOutputStream
+import java.io.IOException
 
 class EditProfileFragment : Fragment(), EditProfileContract.View {
     private lateinit var presenter: EditProfileContract.Presenter
@@ -58,32 +61,34 @@ class EditProfileFragment : Fragment(), EditProfileContract.View {
         toolbar = view.findViewById(R.id.id_drawer_toolbar)
         val drawer = DrawerUtil(requireActivity(), toolbar)
         drawer.getDrawer()
-        profilePicture.setOnClickListener(View.OnClickListener {
+        profilePicture.setOnClickListener {
             val pickPhoto = Intent(
                 Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI
             )
             startActivityForResult(pickPhoto, 1)
-        })
-        updateProfileButton.setOnClickListener(View.OnClickListener {
+        }
+        updateProfileButton.setOnClickListener {
             presenter.updateProfile(
                 fullNameEditText.text.toString(),
                 phoneEditText.text.toString(),
-                profilePictureAsString!!
+                profilePictureAsString
             )
-        })
+        }
         presenter.getProfileDetails(requireActivity().intent.getIntExtra("userId", 0))
         return view
     }
 
-    override fun updateProfile(profileDetails: ProfileDetailsViewModel?) {
-        fullNameEditText.text = profileDetails!!.fullName
+    override fun updateProfile(profileDetails: ProfileDetailsViewModel) {
+        fullNameEditText.text = profileDetails.fullName
         emailEditText.text = profileDetails.email
         phoneEditText.text = profileDetails.phone
-        profilePictureAsString = profileDetails.pictureAsString
-        val decodedString = Base64.decode(profileDetails.pictureAsString, Base64.DEFAULT)
-        val bmp = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-        profilePicture.setImageBitmap(bmp)
+        if (profileDetails.pictureAsString != null) {
+            profilePictureAsString = profileDetails.pictureAsString
+            val decodedString = Base64.decode(profileDetails.pictureAsString, Base64.DEFAULT)
+            val bmp = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+            profilePicture.setImageBitmap(bmp)
+        }
     }
 
     override fun showProfileActivity() {
@@ -110,16 +115,16 @@ class EditProfileFragment : Fragment(), EditProfileContract.View {
             val selectedImage = data.data
             profilePicture.setImageURI(selectedImage)
 
-//            Bitmap bitmap = null;
-//            try {
-//                bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), selectedImage);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-//            byte[] byteArray = stream.toByteArray();
-//            profilePictureAsString = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            lateinit var bitmap: Bitmap
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, selectedImage);
+            } catch (e: IOException) {
+                e.printStackTrace();
+            }
+            val stream = ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            val byteArray = stream.toByteArray();
+            profilePictureAsString = Base64.encodeToString(byteArray, Base64.DEFAULT);
         }
     }
 

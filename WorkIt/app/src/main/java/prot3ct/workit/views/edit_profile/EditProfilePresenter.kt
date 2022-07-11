@@ -32,7 +32,7 @@ class EditProfilePresenter(private val view: EditProfileContract.View, context: 
                 })
     }
 
-    override fun updateProfile(fullName: String, phone: String, profilePictureAsString: String) {
+    override fun updateProfile(fullName: String, phone: String, profilePictureAsString: String?) {
         userData.updateProfile(fullName, phone, profilePictureAsString)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

@@ -102,7 +102,7 @@ class OkHttpRequester : OkHttpRequesterContract {
 
     fun put(
         url: String?,
-        body: Map<String, String>,
+        body: Map<String, String?>,
         headers: Map<String?, String?>
     ): Observable<HttpResponseContract> {
         return Observable.defer {
@@ -141,10 +141,12 @@ class OkHttpRequester : OkHttpRequesterContract {
         }
     }
 
-    private fun createRequestBody(bodyMap: Map<String, String>): RequestBody {
+    private fun createRequestBody(bodyMap: Map<String, String?>): RequestBody {
         val bodyBuilder = FormBody.Builder()
         for ((key, value) in bodyMap) {
-            bodyBuilder.add(key, value)
+            value?.let {
+                bodyBuilder.add(key, value)
+            }
         }
         return bodyBuilder.build()
     }

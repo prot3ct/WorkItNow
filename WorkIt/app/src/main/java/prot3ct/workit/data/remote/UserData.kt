@@ -39,9 +39,9 @@ class UserData(context: Context) : UserDataContract {
     override fun updateProfile(
         fullName: String,
         phone: String,
-        profilePictureAsString: String
+        profilePictureAsString: String?
     ): Observable<Boolean> {
-        val profileDetails: MutableMap<String, String> = HashMap()
+        val profileDetails: MutableMap<String, String?> = HashMap()
         profileDetails["userId"] = userSession.id.toString() + ""
         profileDetails["fullName"] = fullName
         profileDetails["phone"] = phone

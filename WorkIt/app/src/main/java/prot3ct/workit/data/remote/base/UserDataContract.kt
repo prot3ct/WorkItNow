@@ -10,6 +10,6 @@ interface UserDataContract {
     fun updateProfile(
         fullName: String,
         phone: String,
-        profilePictureAsString: String
+        profilePictureAsString: String?
     ): Observable<Boolean>
 }

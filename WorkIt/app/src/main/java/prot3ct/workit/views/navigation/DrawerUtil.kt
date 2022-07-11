@@ -30,7 +30,7 @@ import prot3ct.workit.views.profile.ProfileActivity
 
 class DrawerUtil(private val activity: Activity, private val toolbar: Toolbar) {
     private lateinit var drawer: Drawer
-    private lateinit var picture: Bitmap
+    private var picture: Bitmap? = null
     private val userData: UserData = UserData(activity.baseContext)
     private val authData: AuthData = AuthData(activity.baseContext)
     private val loggedInUserId: Int = authData.loggedInUserId
@@ -38,7 +38,6 @@ class DrawerUtil(private val activity: Activity, private val toolbar: Toolbar) {
     private lateinit var profileDrawer: ProfileDrawerItem
 
     fun getDrawer() {
-        setupDrawer()
         userData.getProfileDetails(loggedInUserId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -46,7 +45,7 @@ class DrawerUtil(private val activity: Activity, private val toolbar: Toolbar) {
                 object : Observer<ProfileDetailsViewModel> {
                     override fun onSubscribe(d: Disposable) {}
                     override fun onNext(profile: ProfileDetailsViewModel) {
-                        updateDrawer(profile)
+                        setupDrawer(profile)
                     }
 
                     override fun onError(e: Throwable) {
@@ -57,22 +56,19 @@ class DrawerUtil(private val activity: Activity, private val toolbar: Toolbar) {
                 })
     }
 
-    private fun updateDrawer(profile: ProfileDetailsViewModel) {
-        profileDrawer.withName(profile.fullName)
-        profileDrawer.withEmail(profile.email)
-
+    private fun setupDrawer(profile: ProfileDetailsViewModel) {
         if (profile.pictureAsString != null) {
             val decodedString: ByteArray = Base64.decode(profile.pictureAsString, Base64.DEFAULT)
             picture = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-            profileDrawer.withIcon(picture)
         }
 
-        headerResult.updateProfile(profileDrawer)
-    }
-
-    private fun setupDrawer() {
-        profileDrawer = ProfileDrawerItem().withName("").withEmail("")
-            .withIcon(activity.resources.getDrawable(R.drawable.blank_profile_picture))
+        profileDrawer = ProfileDrawerItem().withName(profile.fullName).withEmail(profile.email)
+        if (picture != null) {
+            profileDrawer.withIcon(picture)
+        }
+        else {
+            profileDrawer.withIcon(activity.resources.getDrawable(R.drawable.blank_profile_picture))
+        }
         headerResult = AccountHeaderBuilder()
             .withActivity(activity)
             .withHeaderBackground(R.drawable.navigation_background)

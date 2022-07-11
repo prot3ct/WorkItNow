@@ -6,7 +6,7 @@ import prot3ct.workit.view_models.ProfileDetailsViewModel
 interface EditProfileContract {
     interface View : BaseView<Presenter> {
         fun notifyError(errorMessage: String)
-        fun updateProfile(profileDetails: ProfileDetailsViewModel?)
+        fun updateProfile(profileDetails: ProfileDetailsViewModel)
         fun showDialogforLoading()
         fun notifySuccessful(msg: String)
         fun showProfileActivity()
@@ -14,7 +14,7 @@ interface EditProfileContract {
     }
 
     interface Presenter {
-        fun updateProfile(fullName: String, phone: String, profilePictureAsString: String)
+        fun updateProfile(fullName: String, phone: String, profilePictureAsString: String?)
         fun getProfileDetails(userId: Int)
     }
 }
